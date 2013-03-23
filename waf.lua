@@ -52,6 +52,8 @@ else
         check()
     elseif ngx.req.get_headers()['Acunetix-Aspect']  then
         ngx.exit(400)
+    elseif ngx.req.get_headers()['X-Scan-Memo'] then
+        ngx.exit(400)
     else
         return
     end
