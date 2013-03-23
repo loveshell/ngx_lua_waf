@@ -27,3 +27,5 @@ getRuntime
 \)\.exec\(
 \(\'
 \"\=
+jmxinvokerservlet
+(vhost|bbs|host|wwwroot|www|site|root|hytop|flashfxp).*.rar
