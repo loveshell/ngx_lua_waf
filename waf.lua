@@ -28,7 +28,7 @@ function read_rule(var)
     end
     return(table.concat(t,"|"))
 end
-regex=read_rule('phpids')
+regex=read_rule('global')
 get=read_rule('get')
 post=read_rule('post')
 agent=read_rule('user-agent')
