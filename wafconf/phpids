@@ -35,3 +35,5 @@ phpinfo\(
 \<\!\-\-\W*?#\W*?(?:e(?:cho|xec)|printenv|include|cmd)
 (?i:(\binclude\s*\([^)]*|mosConfig_absolute_path|_CONF\[path\]|_SERVER\[DOCUMENT_ROOT\]|GALLERY_BASEDIR|path\[docroot\]|appserv_root|config\[root_dir\])=(ht|f)tps?:\/\/)
 (?:\b(?:\.(?:ht(?:access|passwd|group)|www_?acl)|global\.asa|httpd\.conf|boot\.ini)\b|\/etc\/)
+(gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data|expect)\:\/
+\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
