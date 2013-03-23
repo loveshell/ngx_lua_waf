@@ -9,7 +9,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 	
 	用于过滤post，get，cookie方式常见的web攻击
 	
-	防止sql注入，本地包含，部分溢出，fuzzing测试，xss攻击等web攻击
+	防止sql注入，本地包含，部分溢出，fuzzing测试，xss,SSRF等web攻击
 	
 	防止svn/备份之类文件泄漏
 	
