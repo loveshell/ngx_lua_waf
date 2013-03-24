@@ -72,7 +72,7 @@ function check()
     ngx.exit(200)
 end
 function read_rule(var)
-    file = io.open("/usr/local/openresty/nginx/conf/wafconf/"..var,"r")
+    file = io.open("/usr/local/nginx/conf/wafconf/"..var,"r")
     t = {}
     for line in file:lines() do
         table.insert(t,line)
