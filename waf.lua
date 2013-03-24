@@ -1,3 +1,4 @@
+--发送syslog数据函数
 function syslog(msg)
     ngx.header.content_type = "text/html"
     kern = 0
@@ -33,6 +34,7 @@ function syslog(msg)
 
 local sock = ngx.socket.udp()
 local ok, err = sock:setpeername('127.0.0.1', 514)
+--上面的ip和端口就是syslog server的ip和端口地址，可自行修改
 if not ok then
     ngx.say("failed to connect to syslog server: ", err)
     return
@@ -43,7 +45,7 @@ sign=level+facility*8
 ok, err = sock:send('<'..sign..'>'..msg)
 sock:close()
 end
-
+--日志处理函数
 function log(method,url,data)
 
 file=assert(io.open("/data/logs/hack/"..ngx.var.server_name.."_sec.log","a"))
