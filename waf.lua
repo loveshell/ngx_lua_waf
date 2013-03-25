@@ -88,7 +88,7 @@ agent=read_rule('user-agent')
 whitelist=read_rule('whitelist')
 if  ngx.re.match(ngx.var.request_uri,whitelist,"i") then
     return
-elseif ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),[[^(?!Content-Disposition: form-data;(.*)filename="(.*).(php|jsp|phtml)").*$]],"i") then
+elseif ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),[[^(?!Content-Disposition: form-data;(.*)filename="(.*).(php|jsp|phtml)").*$]],"isjo") then
     return
 else
     if ngx.re.match(ngx.unescape_uri(ngx.var.request_uri),regex.."|"..get,"isjo") then
