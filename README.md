@@ -33,6 +33,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 
 请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
 
+
 ###配置文件添加：
 
 	在http段添加
@@ -63,9 +64,10 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 		
 		user-agent是对user-agent的过滤规则
 	
-	名称格式如下:虚拟主机名_sec.log
 
 	默认开启了get和post过滤，需要开启cookie过滤的，编辑waf.lua取消部分--注释即可
+	
+	日志文件名称格式如下:虚拟主机名_sec.log
 
 	欢迎大家到http://bbs.linuxtone.org多多交流
 
