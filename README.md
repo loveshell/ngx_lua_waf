@@ -1,5 +1,5 @@
 ##ngx_lua_waf
-ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web应用防火墙。
+ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用防火墙。
 
 代码很简单，开发初衷主要是使用简单，高性能和轻量级。
 
