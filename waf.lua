@@ -86,7 +86,7 @@ get=read_rule('get')
 post=read_rule('post')
 agent=read_rule('user-agent')
 whitelist=read_rule('whitelist')
-if  ngx.re.match(ngx.var.request_uri,whitelist,"i") then
+if  ngx.re.match(ngx.var.request_uri,whitelist,"isjo") then
     return
 elseif ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),[[^(?!Content-Disposition: form-data;(.*)filename="(.*).(php|jsp|phtml|asp|aspx|cgi)").*$]],"isjo") then
     return
