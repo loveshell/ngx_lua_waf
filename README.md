@@ -27,6 +27,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 
 ###推荐安装:
 请自行给nginx安装ngx_lua模块，推荐lujit2.0做lua支持
+请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
 
 ###配置文件添加：
 
@@ -47,8 +48,6 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 ###一些说明：
 
 	过滤规则在wafconf下，可根据需求自行调整，每条规则需换行
-	
-	攻击日志记录在/data/logs/hack/目录下(如果没有请提前新建该目录，并赋予nginx用户对该目录的写入权限)
 	
 	名称格式如下:虚拟主机名_sec.log
 
