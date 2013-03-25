@@ -91,7 +91,7 @@ if  ngx.re.match(ngx.var.request_uri,whitelist,"i") then
 elseif ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),[[^(?!Content-Disposition: form-data;(.*)filename="(.*).(php|jsp|phtml)").*$]],"isjo") then
     return
 else
-    if ngx.re.match(ngx.unescape_uri(ngx.var.request_uri),regex.."|"..get,"isjo") then
+    if ngx.re.match(string.gsub(ngx.unescape_uri(ngx.var.request_uri),"%%",""),regex.."|"..get,"isjo") then
         log('GET',ngx.unescape_uri(ngx.var.request_uri))
         check()
     elseif ngx.req.get_body_data() and ngx.re.match(ngx.unescape_uri(ngx.req.get_body_data()),regex,"isjo")then
