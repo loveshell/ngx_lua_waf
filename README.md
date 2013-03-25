@@ -51,7 +51,17 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua开发的web�
 
 ###一些说明：
 
-	过滤规则在wafconf下，可根据需求自行调整，每条规则需换行
+	过滤规则在wafconf下，可根据需求自行调整，每条规则需换行,或者用|分割
+	
+		global是全局过滤文件，里面的规则对post和get都过滤
+		
+		get是只在get请求过滤的规则
+		
+		post是只在post请求过滤的规则
+		
+		whitelist是白名单，里面的url匹配到不做过滤
+		
+		user-agent是对user-agent的过滤规则
 	
 	名称格式如下:虚拟主机名_sec.log
 
