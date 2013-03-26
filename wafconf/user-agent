@@ -1,1 +1,1 @@
-.*(LWP::Simple|winhttp|clshttp|HTTrack|harvest|nsauditor|dirbuster|pangolin|nmap|sqlninja|grendel-scan|hydra|perl|HTMLParser|libwww|BBBike|sqlmap|w3af|owasp|Nikto|fimap|havij|PycURL|sae|zmeu|BabyKrokodil|python|netsparker|httperf|ApacheBench).*
+.*(LWP::Simple|winhttp|clshttp|HTTrack|harvest|nsauditor|dirbuster|pangolin|nmap|sqlninja|grendel-scan|hydra|perl|HTMLParser|libwww|BBBike|sqlmap|w3af|owasp|Nikto|fimap|havij|PycURL|sae|zmeu|BabyKrokodil|python|netsparker|httperf|ApacheBench|webbench).*
