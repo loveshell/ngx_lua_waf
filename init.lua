@@ -84,7 +84,6 @@ function log(method,url,data)
 			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
         end
     end
---file:close()
 end
 --------------------------------------响应函数--------------------------------------------------------------------------------
 function check()
@@ -99,6 +98,7 @@ function read_rule(var)
     for line in file:lines() do
         table.insert(t,line)
     end
+    file:close()
     return(table.concat(t,"|"))
 end
 regex=read_rule('global')
