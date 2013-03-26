@@ -70,10 +70,10 @@ function log(method,url,data)
     if data then
       if ngx.var.http_user_agent  then
   --		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-			write(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
+			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
       else
 	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-			write(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
+			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
       end
     else
         if ngx.var.http_user_agent  then
@@ -81,7 +81,7 @@ function log(method,url,data)
             write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
         else
 	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
-			write(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
+			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
         end
     end
 --file:close()
