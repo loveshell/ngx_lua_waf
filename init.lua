@@ -1,3 +1,8 @@
+--配置部分
+logpath='/data/logs/hack/'
+rulepath='/usr/local/nginx/conf/wafconf/'
+syslogserver='127.0.0.1'
+--如果需要开启syslog传输，请取消掉log函数部分的注释
 --syslog函数和本地日志记录函数
 local bit = require "bit"
 local ffi = require "ffi"
@@ -54,7 +59,7 @@ function syslog(msg)
 
 
 local sock = ngx.socket.udp()
-local ok, err = sock:setpeername('127.0.0.1', 514)
+local ok, err = sock:setpeername(syslogserver, 514)
 --上面的ip和端口就是syslog server的ip和端口地址，可自行修改
 if not ok then
     ngx.say("failed to connect to syslog server: ", err)
@@ -70,18 +75,18 @@ function log(method,url,data)
     if data then
       if ngx.var.http_user_agent  then
   --		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
+			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
       else
 	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
+			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
       end
     else
         if ngx.var.http_user_agent  then
           --  syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
-            write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
+            write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
         else
 	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
-			write("/data/logs/hack/"..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
+			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
         end
     end
 end
@@ -93,7 +98,7 @@ function check()
 end
 ------------------------------------规则读取函数-------------------------------------------------------------------
 function read_rule(var)
-    file = io.open("/usr/local/nginx/conf/wafconf/"..var,"r")
+    file = io.open(rulepath..'/'..var,"r")
     t = {}
     for line in file:lines() do
         table.insert(t,line)
