@@ -44,6 +44,8 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
  
 	access_by_lua_file /usr/local/nginx/conf/waf.lua;
 
+	注意：如果您的nginx安装路径不在/usr/local/nginx/这里，请自行修改如上路径，并修改waf.lua里的read_rule函数里的规则路径。
+	代码很简单，完全可以自行diy。配置文件进一步完善中
 
 ###规则更新：
 考虑到正则的缓存问题，动态规则会影响性能，所以暂没用共享内存字典和redis之类东西做动态管理。
