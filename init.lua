@@ -93,7 +93,7 @@ function check()
 end
 ------------------------------------规则读取函数-------------------------------------------------------------------
 function read_rule(var)
-    file = io.open("./wafconf/"..var,"r")
+    file = io.open("/usr/local/nginx/conf/wafconf/"..var,"r")
     t = {}
     for line in file:lines() do
         table.insert(t,line)
