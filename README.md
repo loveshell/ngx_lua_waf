@@ -33,6 +33,8 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 
 请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
 
+wafconf目录需要和nginx.conf在同一目录
+
 
 ###配置文件添加：
 
