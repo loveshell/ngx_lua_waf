@@ -39,6 +39,8 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	在http段添加
 
 	lua_need_request_body on;（开启post请求）
+	
+	init_by_lua_file  /usr/local/nginx/conf/init.lua;
  
 	access_by_lua_file /usr/local/nginx/conf/waf.lua;
 
