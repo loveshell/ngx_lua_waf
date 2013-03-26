@@ -8,6 +8,8 @@ SomeCustomInjectedHeader
 \/proc\/(\d+|self)\/environ
 .htaccess
 \<(iframe|script|body|img)
+\/\!\*
+\/\*.*?\*\/
 javascript\:
 onmouseover\=
 \.svn
