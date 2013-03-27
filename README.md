@@ -64,8 +64,8 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	
 	日志文件名称格式如下:虚拟主机名_sec.log
 
-	欢迎大家到http://bbs.linuxtone.org多多交流
+欢迎大家到http://bbs.linuxtone.org多多交流
 
-	weibo: [@ppla](http://weibo.com/opscode)
+weibo: [@ppla](http://weibo.com/opscode)
 	
-	感谢ngx_lua模块的开发者[@agentzh](https://github.com/agentzh/),春哥是我见过开源精神最好的人之一
+感谢ngx_lua模块的开发者[@agentzh](https://github.com/agentzh/),春哥是我所接触过开源精神最好的人
