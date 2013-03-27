@@ -27,18 +27,20 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
 
 
-###配置文件添加：
-
-	在http段添加
-	lua_need_request_body on;（开启post请求）	
-	init_by_lua_file  /usr/local/nginx/conf/init.lua; 
-	access_by_lua_file /usr/local/nginx/conf/waf.lua;
+###配置部分：
 
 	编辑init.lua配置部分
 	logpath='/data/logs/hack/'
 	rulepath='/usr/local/nginx/conf/wafconf/'
 	syslogserver='127.0.0.1'
 	如果需要开启syslog传输，请取消掉log函数部分的注释
+
+	在nginx.conf的http段添加
+	lua_need_request_body on;（开启post请求）	
+	init_by_lua_file  /usr/local/nginx/conf/init.lua; 
+	access_by_lua_file /usr/local/nginx/conf/waf.lua;
+	
+	注意:第一次安装配置好需要重启nginx
 
 ###规则更新：
 考虑到正则的缓存问题，动态规则会影响性能，所以暂没用共享内存字典和redis之类东西做动态管理。
