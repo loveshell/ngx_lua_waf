@@ -1,4 +1,5 @@
 ##ngx_lua_waf
+
 ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用防火墙。
 
 代码很简单，开发初衷主要是使用简单，高性能和轻量级。
@@ -43,6 +44,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	注意:第一次安装配置好需要重启nginx
 
 ###规则更新：
+
 考虑到正则的缓存问题，动态规则会影响性能，所以暂没用共享内存字典和redis之类东西做动态管理。
 
 规则更新可以把规则文件放置到其他服务器，通过crontab任务定时下载来更新规则，nginx reload即可生效。以保障ngx lua waf的高性能。
@@ -63,6 +65,9 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	默认开启了get和post过滤，需要开启cookie过滤的，编辑waf.lua取消部分--注释即可
 	
 	日志文件名称格式如下:虚拟主机名_sec.log
+
+
+###关于
 
 欢迎大家到http://bbs.linuxtone.org 多多交流
 
