@@ -7,8 +7,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 现在开源出来.其中包含我们的过滤规则。如果大家有什么建议和想fa，欢迎和我一起完善。
 
 ###用途：
-	
-	用于过滤post，get，cookie方式常见的web攻击	
+		
 	防止sql注入，本地包含，部分溢出，fuzzing测试，xss,SSRF等web攻击
 	防止svn/备份之类文件泄漏
 	防止ApacheBench之类压力测试工具的攻击
