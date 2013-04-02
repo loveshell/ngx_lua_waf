@@ -22,7 +22,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 
 ###推荐安装:
 
-请自行给nginx安装ngx_lua模块，推荐lujit2.0做lua支持
+请自行给nginx安装ngx_lua模块，需要lujit做lua支持
 
 请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
 
