@@ -43,3 +43,5 @@ unzip master.zip
 mv ngx_lua_waf-master/* /usr/local/nginx/conf/
 rm -rf ngx_lua_waf-master
 rm -rf /data/src
+mkdir -p /data/logs/hack
+chmod -R 777 /data/logs/hack
