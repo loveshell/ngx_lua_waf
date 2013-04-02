@@ -41,5 +41,5 @@ cd /usr/local/nginx/conf/
 wget https://github.com/loveshell/ngx_lua_waf/archive/master.zip --no-check-certificate
 unzip master.zip
 mv ngx_lua_waf-master/* /usr/local/nginx/conf/
-rm -rf mv ngx_lua_waf-master
+rm -rf ngx_lua_waf-master
 rm -rf /data/src
