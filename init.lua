@@ -2,6 +2,7 @@
 logpath='/data/logs/hack/'
 rulepath='/usr/local/nginx/conf/wafconf/'
 syslogserver='127.0.0.1'
+filext=''
 --如果需要开启syslog传输，请取消掉log函数部分的注释
 --syslog函数和本地日志记录函数
 local bit = require "bit"
