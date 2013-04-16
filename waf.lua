@@ -1,7 +1,5 @@
 if  ngx.re.match(ngx.var.request_uri,whitelist,"isjo") then
     return
---elseif ngx.req.get_method()=='POST' and ngx.re.match(ngx.req.get_body_data(),[[^(Content-Disposition: form-data;(.*)filename="(.*).(gif|jpg|jpeg|png|bmp|zip|rar)").*$]],"isjo") then
---    return
 else
     if ngx.re.match(ngx.unescape_uri(ngx.var.request_uri),regex.."|"..get,"isjo") then
         log('GET',ngx.unescape_uri(ngx.var.request_uri))
@@ -16,6 +14,8 @@ else
         check()
     elseif ngx.req.get_method()=='POST' and ngx.re.match(ngx.unescape_uri(ngx.req.get_body_data()),regex.."|"..post,"isjo") then
         log('POST',ngx.unescape_uri(ngx.var.request_uri),ngx.unescape_uri(ngx.req.get_body_data()))
+        check()
+    elseif string.len(filext) >0 and ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),[[^(Content-Disposition: form-data;(.*)filename="(.*).("..filext..")").*$]],"isjo") then
         check()
 --    elseif ngx.req.get_headers()["Cookie"] and ngx.re.match(ngx.unescape_uri(ngx.req.get_headers()["Cookie"]),regex,"isjo")then
 --        log('COOKIE',ngx.unescape_uri(ngx.var.request_uri),ngx.unescape_uri(ngx.req.get_headers()["Cookie"]))
