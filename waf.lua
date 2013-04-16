@@ -1,3 +1,4 @@
+ngx.req.read_body()
 if  ngx.re.match(ngx.var.request_uri,whitelist,"isjo") then
     return
 else
