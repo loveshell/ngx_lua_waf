@@ -34,9 +34,9 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	rulepath='/usr/local/nginx/conf/wafconf/'
 	syslogserver='127.0.0.1'
 	如果需要开启syslog传输，请取消掉log函数部分的注释
+	filext是限制上传的文件后缀名
 
 	在nginx.conf的http段添加
-	lua_need_request_body on;（开启post请求）	
 	init_by_lua_file  /usr/local/nginx/conf/init.lua; 
 	access_by_lua_file /usr/local/nginx/conf/waf.lua;
 	
