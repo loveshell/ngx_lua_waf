@@ -14,7 +14,7 @@ else
     elseif ngx.var.http_user_agent and ngx.re.match(ngx.var.http_user_agent,regex.."|"..agent,"isjo")  then
         log('USER-AGENT',ngx.unescape_uri(ngx.var.request_uri))
         check()
-    elseif ngx.req.get_method()=='POST' and ngx.re.match(ngx.unescape_uri(ngx.req.get_body_data()),regex,"isjo") then
+    elseif ngx.req.get_method()=='POST' and ngx.re.match(ngx.unescape_uri(ngx.req.get_body_data()),regex.."|"..post,"isjo") then
         log('POST',ngx.unescape_uri(ngx.var.request_uri),ngx.unescape_uri(ngx.req.get_body_data()))
         check()
 --    elseif ngx.req.get_headers()["Cookie"] and ngx.re.match(ngx.unescape_uri(ngx.req.get_headers()["Cookie"]),regex,"isjo")then
