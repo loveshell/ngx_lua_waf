@@ -1,6 +1,6 @@
 --配置部分
 logpath='/data/logs/hack/'
-rulepath='/usr/local/nginx/conf/wafconf/'
+rulepath='/usr/local/openresty/nginx/conf/ngx_lua_waf/wafconf/'
 syslogserver='127.0.0.1'
 filext=''
 --如果需要开启syslog传输，请取消掉log函数部分的注释
@@ -21,10 +21,10 @@ local O_APPEND = 0x0400;
 local S_IRUSR = 0x0100;
 local S_IWUSR = 0x0080;
 function write(logfile,msg)
-            local logger_fd = C.open(logfile, bor(O_RDWR, O_CREAT, O_APPEND), bor(S_IRUSR,S_IWUSR));
-            local c = msg;
-            C.write(logger_fd, c, #c);
-            C.close(logger_fd)
+    local logger_fd = C.open(logfile, bor(O_RDWR, O_CREAT, O_APPEND), bor(S_IRUSR,S_IWUSR));
+    local c = msg;
+    C.write(logger_fd, c, #c);
+    C.close(logger_fd)
 end
 function syslog(msg)
     ngx.header.content_type = "text/html"
@@ -59,56 +59,97 @@ function syslog(msg)
     debug = 7
 
 
-local sock = ngx.socket.udp()
-local ok, err = sock:setpeername(syslogserver, 514)
---上面的ip和端口就是syslog server的ip和端口地址，可自行修改
-if not ok then
-    ngx.say("failed to connect to syslog server: ", err)
-    return
-end
-level=info
-facility=daemon
-sign=level+facility*8
-ok, err = sock:send('<'..sign..'>'..msg)
-sock:close()
-end
-function log(method,url,data)
-    if data then
-      if ngx.var.http_user_agent  then
-  --		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-      else
-	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-      end
-    else
-        if ngx.var.http_user_agent  then
-          --  syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
-            write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
-        else
-	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
-        end
+    local sock = ngx.socket.udp()
+    local ok, err = sock:setpeername(syslogserver, 514)
+    --上面的ip和端口就是syslog server的ip和端口地址，可自行修改
+    if not ok then
+        ngx.say("failed to connect to syslog server: ", err)
+        return
     end
+    level=info
+    facility=daemon
+    sign=level+facility*8
+    ok, err = sock:send('<'..sign..'>'..msg)
+    sock:close()
 end
---------------------------------------响应函数--------------------------------------------------------------------------------
-function check()
-    ngx.header.content_type = "text/html"
-    ngx.print("just a joke hehe~ !!")
-    ngx.exit(200)
+function log()
+    if ngx.var.http_user_agent  then
+        --  syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
+        write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..ngx.req.get_method().." "..ngx.var.request_uri.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
+    else
+        --		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
+        write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..ngx.req.get_method().." "..ngx.var.request_uri.."\" \"-\" \"".."-\"\n")
+    end
 end
 ------------------------------------规则读取函数-------------------------------------------------------------------
-function read_rule(var)
-    file = io.open(rulepath..'/'..var,"r")
+function getrule(method,dict)    
+    local waf = dict;
+    file = io.open(rulepath..'/'..method,"r")
     t = {}
     for line in file:lines() do
-        table.insert(t,line)
+        waf.set(waf,line,true)
     end
     file:close()
-    return(table.concat(t,"|"))
 end
-regex=read_rule('global')
-get=read_rule('get')
-post=read_rule('post')
-agent=read_rule('user-agent')
-whitelist=read_rule('whitelist')
+local update = ngx.shared.update;
+local updated_at = update:get("updated_at");
+if updated_at == nil or updated_at < ( ngx.now() - 10 ) then
+    getrule('urlpath',ngx.shared.urlpath)
+    getrule('post',ngx.shared.post)
+    getrule('user-agent',ngx.shared.ua)
+    getrule('args',ngx.shared.args)
+
+else
+    update:set("updated_at", ngx.now());
+end
+function say_html(ruleid)
+    ngx.header.content_type = "text/html"
+    ngx.say('Please go away~~~')
+    log()
+    ngx.exit(200)
+end
+function args()
+    for k,v in pairs(ngx.shared.args:get_keys()) do
+        local args = ngx.req.get_uri_args()
+        for key, val in pairs(args) do
+            if ngx.re.match(val,v,"isjo") then
+                say_html(k)
+                log('GET')
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function url()
+    for k,v in pairs(ngx.shared.urlpath:get_keys()) do
+        if ngx.re.match(ngx.var.request_uri,v,"isjo") then
+            say_html(k)
+            log('GET')
+            return true
+        end
+    end
+    return false
+end
+
+function ua()
+    for k,v in pairs(ngx.shared.ua:get_keys()) do
+        if ngx.re.match(ngx.var.http_user_agent,v,"isjo") then
+            say_html(k)
+            log('User-agent')
+        end
+    end
+    return false
+end
+
+function body()
+    for k,v in pairs(ngx.shared.post:get_keys()) do
+        if ngx.req.get_body_data() and ngx.re.match(ngx.req.get_body_data(),v,"isjo") then
+            say_html(k)
+            log('POST')
+            return true
+        end
+    end
+    return false
+end
