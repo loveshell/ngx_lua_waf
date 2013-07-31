@@ -31,3 +31,6 @@ getRuntime
 \"\=
 jmxinvokerservlet
 (vhost|bbs|host|wwwroot|www|site|root|hytop|flashfxp).*.rar
+java\.lang\.Process
+java\.io\.File
+com\.opensymphony\.xwork2
