@@ -8,8 +8,6 @@ else
 --    elseif ngx.re.match(string.gsub(ngx.var.request_uri,"\\%",""),regex.."|"..get,"isjo") then
 --        log('GET',ngx.var.request_uri)
 --        check()
-    elseif  ngx.re.match(ngx.var.request_uri,[[%00|%0b|%0d|%c0%ae|%0a]],"isjo") then
-        check()
     elseif ngx.var.http_user_agent and ngx.re.match(ngx.var.http_user_agent,regex.."|"..agent,"isjo")  then
         log('USER-AGENT',ngx.unescape_uri(ngx.var.request_uri))
         check()
