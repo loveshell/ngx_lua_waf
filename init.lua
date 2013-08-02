@@ -94,6 +94,7 @@ end
 --------------------------------------响应函数--------------------------------------------------------------------------------
 function check()
     ngx.header.content_type = "text/html"
+    ngx.sleep(3)
     ngx.print("just a joke hehe~ !!")
     ngx.exit(200)
 end
