@@ -28,37 +28,6 @@ function write(logfile,msg)
 end
 function syslog(msg)
     ngx.header.content_type = "text/html"
-    kern = 0
-    user = 1
-    mail = 2
-    daemon = 3
-    auth = 4
-    syslog = 5
-    lpr = 6
-    news = 7
-    uucp = 8
-    cron = 9
-    authpriv = 10
-    ftp = 11
-    local0 = 16
-    local1 = 17
-    local2 = 18
-    local3 = 19
-    local4 = 20
-    local5 = 21
-    local6 = 22
-    local7 = 23
-
-    emerg = 0
-    alert = 1
-    crit = 2
-    err = 3
-    warning = 4
-    notice = 5
-    info = 6
-    debug = 7
-
-
 local sock = ngx.socket.udp()
 local ok, err = sock:setpeername(syslogserver, 514)
 --上面的ip和端口就是syslog server的ip和端口地址，可自行修改
@@ -66,10 +35,7 @@ if not ok then
     ngx.say("failed to connect to syslog server: ", err)
     return
 end
-level=info
-facility=daemon
-sign=level+facility*8
-ok, err = sock:send('<'..sign..'>'..msg)
+ok, err = sock:send('<30>'..msg)
 sock:close()
 end
 function log(method,url,data)
