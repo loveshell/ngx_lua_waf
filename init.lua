@@ -1,67 +1,52 @@
---配置部分
-logpath='/data/logs/hack/'
-rulepath='/usr/local/nginx/conf/wafconf/'
-syslogserver='127.0.0.1'
-filext=''
---如果需要开启syslog传输，请取消掉log函数部分的注释
---syslog函数和本地日志记录函数
-local bit = require "bit"
-local ffi = require "ffi"
-local C = ffi.C
-local bor = bit.bor
-ffi.cdef[[
-int write(int fd, const char *buf, int nbyte);
-int open(const char *path, int access, int mode);
-int close(int fd);
-]]
-
-local O_RDWR   = 0X0002; 
-local O_CREAT  = 0x0040;
-local O_APPEND = 0x0400;
-local S_IRUSR = 0x0100;
-local S_IWUSR = 0x0080;
-function write(logfile,msg)
-            local logger_fd = C.open(logfile, bor(O_RDWR, O_CREAT, O_APPEND), bor(S_IRUSR,S_IWUSR));
-            local c = msg;
-            C.write(logger_fd, c, #c);
-            C.close(logger_fd)
-end
-function syslog(msg)
-    ngx.header.content_type = "text/html"
-local sock = ngx.socket.udp()
-local ok, err = sock:setpeername(syslogserver, 514)
---上面的ip和端口就是syslog server的ip和端口地址，可自行修改
-if not ok then
-    ngx.say("failed to connect to syslog server: ", err)
-    return
-end
-ok, err = sock:send('<30>'..msg)
-sock:close()
-end
-function log(method,url,data)
-    if data then
-      if ngx.var.http_user_agent  then
-  --		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \""..ngx.status.."\" \""..ngx.var.http_user_agent.."\"\n")
-      else
-	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \""..data.."\" \"-\"\n")
-      end
-    else
-        if ngx.var.http_user_agent  then
-          --  syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
-            write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \""..ngx.var.http_user_agent.."\"\n")
-        else
-	--		syslog(ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
-			write(logpath..'/'..ngx.var.server_name.."_sec.log",ngx.var.remote_addr.." ".." ["..ngx.localtime().."] \""..method.." "..url.."\" \"-\" \"".."-\"\n")
+require 'config'
+local match = string.match
+local ngxmatch=ngx.re.match
+local unescape=ngx.unescape_uri
+local get_headers = ngx.req.get_headers
+local optionIsOn = function (options) return options == "on" and true or false end
+logpath = logdir 
+rulepath = RulePath
+UrlDeny = optionIsOn(UrlDeny)
+PostCheck = optionIsOn(postMatch)
+CookieCheck = optionIsOn(cookieMatch)
+WhiteCheck = optionIsOn(whiteModule)
+PathInfoFix = optionIsOn(PathInfoFix)
+attacklog = optionIsOn(attacklog)
+CCDeny = optionIsOn(CCDeny)
+CCrate = CCrate
+Redirect=optionIsOn(Redirect)
+ipWhitelist=ipWhitelist
+function getClientIp()
+        IP = ngx.req.get_headers()["X-Real-IP"]
+        if IP == nil then
+                IP  = ngx.var.remote_addr 
         end
-    end
+        if IP == nil then
+                IP  = "unknown"
+        end
+        return IP
 end
---------------------------------------响应函数--------------------------------------------------------------------------------
-function check()
-    ngx.header.content_type = "text/html"
-    ngx.print("just a joke hehe~ !!")
-    ngx.exit(200)
+function write(logfile,msg)
+    local fd = io.open(logfile,"ab")
+    if fd == nil then return end
+    fd:write(msg)
+    fd:flush()
+    fd:close()
+end
+function log(method,url,data,ruletag)
+    if attacklog then
+	    local realIp = getClientIp()
+	    local ua = ngx.var.http_user_agent
+    	local servername=ngx.var.server_name
+    	local time=ngx.localtime()
+	    if ua  then
+		    line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..ruletag.."\"\n"
+    	else
+	    	line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..ruletag.."\"\n"
+    	end
+	    local filename = logpath..'/'..servername.."_"..ngx.today().."_sec.log"
+        write(filename,line)
+    end
 end
 ------------------------------------规则读取函数-------------------------------------------------------------------
 function read_rule(var)
@@ -71,10 +56,149 @@ function read_rule(var)
         table.insert(t,line)
     end
     file:close()
-    return(table.concat(t,"|"))
+    return(t)
 end
-regex=read_rule('global')
-get=read_rule('get')
-post=read_rule('post')
-agent=read_rule('user-agent')
-whitelist=read_rule('whitelist')
+
+urlrules=read_rule('url')
+argsrules=read_rule('args')
+uarules=read_rule('user-agent')
+wturlrules=read_rule('whiteurl')
+postrules=read_rule('post')
+ckrules=read_rule('cookie')
+
+
+function say_html()
+    if Redirect then
+        ngx.header.content_type = "text/html"
+        ngx.say(html)
+        ngx.exit(200)
+    end
+end
+
+function whiteurl()
+    if WhiteCheck then 
+        for _,rule in pairs(wturlrules) do
+            if ngxmatch(ngx.var.request_uri,rule,"isjo") then
+                return true 
+            end
+        end
+    end
+    return false
+end
+
+function args()
+    for _,rule in pairs(argsrules) do
+        local args = ngx.req.get_uri_args()
+        for key, val in pairs(args) do
+            if type(val)=='table' then
+                data=table.concat(val, " ")
+            else
+                data=val
+            end
+            if data and type(data) ~= "boolean" and ngxmatch(unescape(data),rule,"isjo") then
+				log('GET',ngx.var.request_uri,"-",rule)
+                say_html()
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
+function url()
+    if UrlDeny then
+        for _,rule in pairs(urlrules) do
+            if ngxmatch(ngx.var.request_uri,rule,"isjo") then
+                log('GET',ngx.var.request_uri,"-",rule)
+                say_html()
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function ua()
+    local ua = ngx.var.http_user_agent
+    for _,rule in pairs(uarules) do
+        if ngxmatch(ua,rule,"isjo") then
+            log('UA',ngx.var.request_uri,"-",rule)
+        return true
+        end
+    end
+    return false
+end
+function body(data)
+    for _,rule in pairs(postrules) do
+        if ngxmatch(unescape(data),rule,"isjo") then
+            log('POST',ngx.var.request_uri,data,rule)
+            say_html()
+            return true
+        end
+    end
+    return false
+end
+function cookie()
+    local ck = ngx.var.http_cookie
+    if CookieCheck and ck then
+        for _,rule in pairs(ckrules) do
+            if ngxmatch(ck,rule,"isjo") then
+                log('Cookie',ngx.var.request_uri,"-",rule)
+                say_html()
+            return true
+            end
+        end
+    end
+    return false
+end
+
+function denycc()
+    if CCDeny then
+        CCcount=tonumber(string.match(CCrate,'(.*)/'))
+        CCseconds=tonumber(string.match(CCrate,'/(.*)'))
+        local token=getClientIp()..ngx.var.request_filename
+        local limit = ngx.shared.limit
+        local req,_=limit:get(token)
+        if req then
+            if req > CCcount then
+                 ngx.exit(503)
+                return true
+            else
+                 limit:incr(token,1)
+            end
+        else
+            limit:set(token,1,CCseconds)
+        end
+    end
+    return false
+end
+
+function get_boundary()
+    local header = get_headers()["content-type"]
+    if not header then
+        return nil
+    end
+
+    if type(header) == "table" then
+        header = header[1]
+    end
+
+    local m = match(header, ";%s*boundary=\"([^\"]+)\"")
+    if m then
+        return m
+    end
+
+    return match(header, ";%s*boundary=([^\",;]+)")
+end
+
+function whiteip()
+    if next(ipWhitelist) ~= nil then
+        for _,ip in pairs(ipWhitelist) do
+            if getClientIp()==ip then
+                return true
+            end
+        end
+    end
+        return false
+end

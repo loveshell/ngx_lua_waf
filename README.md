@@ -7,7 +7,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 现在开源出来.其中包含我们的过滤规则。如果大家有什么建议和想fa，欢迎和我一起完善。
 
 ###用途：
-		
+    	
 	防止sql注入，本地包含，部分溢出，fuzzing测试，xss,SSRF等web攻击
 	防止svn/备份之类文件泄漏
 	防止ApacheBench之类压力测试工具的攻击
@@ -18,29 +18,60 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 
 ###效果图如下：
 
-![sec](http://www.sectop.org/wp-content/uploads/2013/03/QQ截图20130323150826.jpg)
+![sec](http://i.imgur.com/DqU30au.png)
 
 ###推荐安装:
 
-请自行给nginx安装ngx_lua模块，需要lujit做lua支持
-
-请提前新建/data/logs/hack/目录攻击日志，并赋予nginx用户对该目录的写入权限。
+请自行给nginx安装ngx_lua模块，推荐使用lujit做lua支持
 
 
-###配置部分：
+###使用说明：
 
-	编辑init.lua配置部分
-	logpath='/data/logs/hack/'
-	rulepath='/usr/local/nginx/conf/wafconf/'
-	syslogserver='127.0.0.1'
-	如果需要开启syslog传输，请取消掉log函数部分的注释
-	filext是限制上传的文件后缀名
+nginx安装路径假设为:/usr/local/nginx/conf/
 
-	在nginx.conf的http段添加
-	init_by_lua_file  /usr/local/nginx/conf/init.lua; 
-	access_by_lua_file /usr/local/nginx/conf/waf.lua;
-	
-	注意:第一次安装配置好需要重启nginx
+把ngx_lua_waf下载到conf目录下,解压命名为waf
+
+在nginx.conf的http段添加
+
+        lua_package_path "/usr/local/nginx/conf/waf/?.lua";
+        lua_shared_dict limit 10m;
+        init_by_lua_file  /usr/local/nginx/conf/waf/init.lua; 
+    	access_by_lua_file /usr/local/nginx/conf/waf/waf.lua;
+
+配置config.lua里的waf规则目录(一般在waf/conf/目录下)
+
+        RulePath = "/usr/local/nginx/conf/waf/wafconf/"
+
+绝对路径如有变动，需对应修改
+
+###配置文件详细说明：
+
+    	RulePath = "/usr/local/nginx/conf/waf/wafconf/"
+        --规则存放目录
+        attacklog = "off"
+        --是否开启攻击信息记录，需要配置logdir
+        logdir = "/usr/local/nginx/logs/hack/"
+        --log存储目录，该目录需要nginx用户的可写权限
+        UrlDeny="on"
+        --是否拦截url访问
+        Redirect="on"
+        --是否拦截后重定向
+        CookieMatch = "on"
+        --是否拦截cookie攻击
+        postMatch = "on" 
+        --是否拦截post攻击
+        whiteModule = "on" 
+        --是否开启白名单
+        ipWhitelist={"127.0.0.1"}
+        --ip白名单，多个ip用逗号分隔
+        CCDeny="on"
+        --是否开启拦截cc攻击(需要nginx.conf的http段增加lua_shared_dict limit 10m;)
+        CCrate = "100/60"
+        --设置cc攻击频率，单位为秒.
+        --默认1分钟同一个IP只能请求同一个文件(request_filename)100次
+        html=[[Please go away~~]]
+        --警告内容,可在中括号内自定义
+        备注:不要乱动双引号，区分大小写
 
 ###规则更新：
 

@@ -1,24 +1,60 @@
-ngx.req.read_body()
-if  ngx.re.match(ngx.var.request_uri,whitelist,"isjo") then
-    return
-else
-    if ngx.re.match(ngx.unescape_uri(ngx.var.request_uri),regex.."|"..get,"isjo") then
-        log('GET',ngx.unescape_uri(ngx.var.request_uri))
-        check()
-    elseif ngx.var.http_user_agent and ngx.re.match(ngx.var.http_user_agent,regex.."|"..agent,"isjo")  then
-        log('USER-AGENT',ngx.unescape_uri(ngx.var.request_uri))
-        check()
-    elseif ngx.req.get_body_data() and ngx.re.match(ngx.unescape_uri(ngx.req.get_body_data()),regex.."|"..post,"isjo") then
-        log('POST',ngx.unescape_uri(ngx.var.request_uri),ngx.unescape_uri(ngx.req.get_body_data()))
-            check()
-    elseif ngx.req.get_headers()["Cookie"] and ngx.re.match(ngx.unescape_uri(ngx.req.get_headers()["Cookie"]),regex,"isjo")then
-        log('COOKIE',ngx.unescape_uri(ngx.var.request_uri),ngx.unescape_uri(ngx.req.get_headers()["Cookie"]))
-        check()
-    elseif ngx.req.get_headers()['Acunetix-Aspect']  then
-        ngx.exit(400)
-    elseif ngx.req.get_headers()['X-Scan-Memo'] then
-        ngx.exit(400)
-    else
-        return
+ local upload = require "upload"
+ local content_length=tonumber(ngx.req.get_headers()['content-length'])
+local method=ngx.req.get_method()
+if whiteip() then
+elseif denycc() then
+elseif ngx.var.http_Acunetix_Aspect then
+    ngx.exit(444)
+elseif ngx.var.http_X_Scan_Memo then
+    ngx.exit(444)
+elseif whiteurl() then
+elseif ua() then
+elseif url() then
+elseif args() then
+elseif cookie() then
+elseif PostCheck then
+    if method=="POST" then   
+		local boundary = get_boundary()
+		if boundary then
+			local form = upload:new(500)
+            if not form then
+                return
+            end
+            form:set_timeout(1000) -- 1 sec
+            while true do
+                local typ, res, err = form:read()
+                if not typ then
+                    return
+                end
+                if typ=="body" then
+                    body(res)
+                end
+
+                if typ == "eof" then
+                    break
+                end
+            end
+
+--            local typ, res, err = form:read()
+ --           body(res)
+		else
+			ngx.req.read_body()
+			local args = ngx.req.get_post_args()
+			if not args then
+				return
+			end
+			for key, val in pairs(args) do
+				if type(val) == "table" then
+					data=table.concat(val, ", ")
+				else
+					data=val
+				end
+				if data and type(data) ~= "boolean" and body(data) then
+                  return true
+				end
+			end
+		end
     end
+else
+    return
 end
