@@ -157,7 +157,7 @@ function denycc()
     if CCDeny then
         CCcount=tonumber(string.match(CCrate,'(.*)/'))
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
-        local token=getClientIp()..ngx.var.request_filename
+        local ua = getClientIp()..ngx.var.http_user_agent
         local limit = ngx.shared.limit
         local req,_=limit:get(token)
         if req then
