@@ -13,9 +13,7 @@ WhiteCheck = optionIsOn(whiteModule)
 PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
-CCrate = CCrate
 Redirect=optionIsOn(Redirect)
-ipWhitelist=ipWhitelist
 function getClientIp()
         IP = ngx.req.get_headers()["X-Real-IP"]
         if IP == nil then
@@ -201,4 +199,16 @@ function whiteip()
         end
     end
         return false
+end
+
+function blockip()
+     if next(ipBlocklist) ~= nil then
+         for _,ip in pairs(ipBlocklist) do
+             if getClientIp()==ip then
+                 ngx.exit(403)
+                 return true
+             end
+         end
+     end
+         return false
 end
