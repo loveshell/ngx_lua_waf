@@ -64,6 +64,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         --是否开启URL白名单
         ipWhitelist={"127.0.0.1"}
         --ip白名单，多个ip用逗号分隔
+        ipBlocklist={"1.0.0.1"}
+        --ip黑名单，多个ip用逗号分隔
         CCDeny="on"
         --是否开启拦截cc攻击(需要nginx.conf的http段增加lua_shared_dict limit 10m;)
         CCrate = "100/60"
