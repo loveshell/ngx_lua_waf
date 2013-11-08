@@ -77,10 +77,12 @@ function say_html()
 end
 
 function whiteurl()
-    if WhiteCheck then 
-        for _,rule in pairs(wturlrules) do
-            if ngxmatch(ngx.var.request_uri,rule,"isjo") then
-                return true 
+    if WhiteCheck then
+    	if wturlrules ~=nil then
+            for _,rule in pairs(wturlrules) do
+                if ngxmatch(ngx.var.request_uri,rule,"isjo") then
+                    return true 
+                 end
             end
         end
     end
