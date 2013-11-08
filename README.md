@@ -61,7 +61,7 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         postMatch = "on" 
         --是否拦截post攻击
         whiteModule = "on" 
-        --是否开启白名单
+        --是否开启URL白名单
         ipWhitelist={"127.0.0.1"}
         --ip白名单，多个ip用逗号分隔
         CCDeny="on"
