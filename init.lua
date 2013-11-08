@@ -49,6 +49,9 @@ end
 ------------------------------------规则读取函数-------------------------------------------------------------------
 function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
+    if file==nil then
+    	return
+    end
     t = {}
     for line in file:lines() do
         table.insert(t,line)
