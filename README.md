@@ -44,6 +44,9 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 
 绝对路径如有变动，需对应修改
 
+然后重启nginx即可
+
+
 ###配置文件详细说明：
 
     	RulePath = "/usr/local/nginx/conf/waf/wafconf/"
