@@ -127,6 +127,7 @@ function ua()
     for _,rule in pairs(uarules) do
         if rule ~="" and ngxmatch(ua,rule,"isjo") then
             log('UA',ngx.var.request_uri,"-",rule)
+            say_html()
         return true
         end
     end
