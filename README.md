@@ -16,10 +16,6 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 	屏蔽图片附件类目录php执行权限
 	防止webshell上传
 
-###效果图如下：
-
-![sec](http://i.imgur.com/DqU30au.png)
-
 ###推荐安装:
 
 请自行给nginx安装ngx_lua模块，推荐使用lujit做lua支持
@@ -77,6 +73,12 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         html=[[Please go away~~]]
         --警告内容,可在中括号内自定义
         备注:不要乱动双引号，区分大小写
+
+
+###效果图如下：
+
+![sec](http://i.imgur.com/DqU30au.png)
+![sec](http://i.imgur.com/wTgOcm2.png)
 
 ###规则更新：
 
