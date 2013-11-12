@@ -54,7 +54,7 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         attacklog = "off"
         --是否开启攻击信息记录，需要配置logdir
         logdir = "/usr/local/nginx/logs/hack/"
-        --log存储目录，该目录需要nginx用户的可写权限
+        --log存储目录，该目录需要用户自己新建，切需要nginx用户的可写权限
         UrlDeny="on"
         --是否拦截url访问
         Redirect="on"
