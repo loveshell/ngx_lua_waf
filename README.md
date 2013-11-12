@@ -77,8 +77,9 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 
 ###效果图如下：
 
-![sec](http://i.imgur.com/DqU30au.png)
 ![sec](http://i.imgur.com/wTgOcm2.png)
+
+![sec](http://i.imgur.com/DqU30au.png)
 
 ###规则更新：
 
