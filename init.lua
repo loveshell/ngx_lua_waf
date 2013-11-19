@@ -124,12 +124,14 @@ end
 
 function ua()
     local ua = ngx.var.http_user_agent
-    for _,rule in pairs(uarules) do
-        if rule ~="" and ngxmatch(ua,rule,"isjo") then
-            log('UA',ngx.var.request_uri,"-",rule)
-            say_html()
-        return true
-        end
+    if ua ~= nil then
+	    for _,rule in pairs(uarules) do
+	        if rule ~="" and ngxmatch(ua,rule,"isjo") then
+	            log('UA',ngx.var.request_uri,"-",rule)
+	            say_html()
+	        return true
+	        end
+	    end
     end
     return false
 end
