@@ -18,7 +18,8 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 
 ###推荐安装:
 
-请自行给nginx安装ngx_lua模块，推荐使用lujit做lua支持
+请自行给nginx安装ngx_lua模块，推荐使用lujit2.1做lua支持，ngx_lua正则过滤函数改为ngx.re.find，匹配效率会提高三倍左右。
+因为ngx_lua版本问题，这里暂不做更新。
 
 
 ###使用说明：
@@ -73,6 +74,12 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         html=[[Please go away~~]]
         --警告内容,可在中括号内自定义
         备注:不要乱动双引号，区分大小写
+        
+###检查规则是否生效
+	部署完毕可以尝试如下命令：        
+        curl http://xxxx/test.php?id=../etc/passwd
+        返回"Please go away~~"字样，说明规则生效。
+	注意:默认，本机在白名单不过滤，可自行调整config.lua配置
 
 
 ###效果图如下：
