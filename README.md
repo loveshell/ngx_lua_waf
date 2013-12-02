@@ -4,7 +4,7 @@ ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用�
 
 代码很简单，开发初衷主要是使用简单，高性能和轻量级。
 
-现在开源出来.其中包含我们的过滤规则。如果大家有什么建议和想fa，欢迎和我一起完善。
+现在开源出来，遵从MIT许可协议。其中包含我们的过滤规则。如果大家有什么建议和想fa，欢迎和我一起完善。
 
 ###用途：
     	
@@ -116,10 +116,21 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 	日志文件名称格式如下:虚拟主机名_sec.log
 
 
-###关于
+## Copyright
 
-欢迎大家到http://bbs.linuxtone.org 多多交流
-
-weibo: [@ppla](http://weibo.com/opscode)
+<table>
+  <tr>
+    <td>Weibo</td><td>神奇的魔法师</td>
+  </tr>
+  <tr>
+    <td>Forum</td><td>http://bbs.linuxtone.org/</td>
+  </tr>
+  <tr>
+    <td>Copyright</td><td>Copyright (c) 2013- loveshell</td>
+  </tr>
+  <tr>
+    <td>License</td><td>MIT License</td>
+  </tr>
+</table>
 	
 感谢ngx_lua模块的开发者[@agentzh](https://github.com/agentzh/),春哥是我所接触过开源精神最好的人
