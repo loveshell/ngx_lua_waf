@@ -2,6 +2,7 @@
  local content_length=tonumber(ngx.req.get_headers()['content-length'])
 local method=ngx.req.get_method()
 if whiteip() then
+elseif blockip() then
 elseif denycc() then
 elseif ngx.var.http_Acunetix_Aspect then
     ngx.exit(444)
