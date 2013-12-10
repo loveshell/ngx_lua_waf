@@ -8,6 +8,7 @@ postMatch="on"
 whiteModule="on" 
 ipWhitelist={"127.0.0.1"}
 ipBlocklist={"1.0.0.1"}
+uriChecklist={"/users/sign_in", "/users/sign_up"}
 CCDeny="off"
 CCrate="100/60"
 html=[[Please go away~~ ]]
