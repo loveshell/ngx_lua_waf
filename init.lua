@@ -161,7 +161,7 @@ end
 
 function denycc()
     if CCDeny then
-    	local uri=ngx.var.request_uri
+    	local uri=ngx.var.uri
         CCcount=tonumber(string.match(CCrate,'(.*)/'))
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
         local token = getClientIp()..uri
