@@ -46,6 +46,17 @@ function log(method,url,data,ruletag)
         write(filename,line)
     end
 end
+
+function startswith(str, substr)
+    if str == nil or substr == nil then
+        return nil, "the string or the sub-stirng parameter is nil"
+    end
+    if string.find(str, substr) ~= 1 then
+        return false
+    else
+        return true
+    end
+end
 ------------------------------------规则读取函数-------------------------------------------------------------------
 function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
@@ -161,7 +172,7 @@ end
 
 function denycc()
     if CCDeny then
-    	local uri=ngx.var.request_uri
+        local uri=ngx.var.request_uri
         CCcount=tonumber(string.match(CCrate,'(.*)/'))
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
         local token = getClientIp()..uri
@@ -177,6 +188,28 @@ function denycc()
         else
             limit:set(token,1,CCseconds)
         end
+
+        if next(uriChecklist) ~= nil then
+            for _,ckuri in pairs(uriChecklist) do
+                if startswith(uri,ckuri) then
+                    token = getClientIp()
+                    local limit = ngx.shared.limit
+                    local req,_=limit:get(token)
+                    if req then
+                        if req > CCcount then
+                             table.insert(ipBlocklist,token)
+                        else
+                             limit:incr(token,1)
+                        end
+                    else
+                        limit:set(token,1,CCseconds)
+                    end
+                end
+
+             end
+        end 
+
+        blockip()
     end
     return false
 end
