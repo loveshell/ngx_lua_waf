@@ -1,5 +1,4 @@
- local upload = require "upload"
- local content_length=tonumber(ngx.req.get_headers()['content-length'])
+local content_length=tonumber(ngx.req.get_headers()['content-length'])
 local method=ngx.req.get_method()
 if whiteip() then
 elseif blockip() then
@@ -15,30 +14,40 @@ elseif args() then
 elseif cookie() then
 elseif PostCheck then
     if method=="POST" then   
-		local boundary = get_boundary()
-		if boundary then
-			local form = upload:new(500)
-            if not form then
-                return
+            local boundary = get_boundary()
+	    if boundary then
+	    local len = string.len
+            local sock, err = ngx.req.socket()
+    	    if not sock then
+					return
             end
-            form:set_timeout(1000) -- 1 sec
-            while true do
-                local typ, res, err = form:read()
-                if not typ then
-                    return
-                end
-                if typ=="body" then
-                    body(res)
-                end
-
-                if typ == "eof" then
-                    break
-                end
+	    ngx.req.init_body(128 * 1024)
+            sock:settimeout(0)
+	    local content_length = nil
+    	    content_length=tonumber(ngx.req.get_headers()['content-length'])
+    	    local chunk_size = 4096
+            if content_length < chunk_size then
+					chunk_size = content_length
+	    end
+            local size = 0
+	    while size < content_length do
+		local data, err, partial = sock:receive(chunk_size)
+		data = data or partial
+		if not data then
+			return
+		end
+		ngx.req.append_body(data)
+		size = size + len(data)
+		local less = content_length - size
+		if less < chunk_size then
+			chunk_size = less
+		end
             end
-
---            local typ, res, err = form:read()
- --           body(res)
-		else
+    	    	ngx.req.finish_body()
+        	if body(data) then
+	   	        return true
+    	    	end
+    else
 			ngx.req.read_body()
 			local args = ngx.req.get_post_args()
 			if not args then
