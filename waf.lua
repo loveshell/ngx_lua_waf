@@ -37,16 +37,16 @@ elseif PostCheck then
 			return
 		end
 		ngx.req.append_body(data)
+		gx.req.finish_body()
+        	if body(data) then
+	   	        return true
+    	    	end
 		size = size + len(data)
 		local less = content_length - size
 		if less < chunk_size then
 			chunk_size = less
 		end
             end
-    	    	ngx.req.finish_body()
-        	if body(data) then
-	   	        return true
-    	    	end
     else
 			ngx.req.read_body()
 			local args = ngx.req.get_post_args()
