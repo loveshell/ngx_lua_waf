@@ -37,7 +37,6 @@ elseif PostCheck then
 			return
 		end
 		ngx.req.append_body(data)
-		gx.req.finish_body()
         	if body(data) then
 	   	        return true
     	    	end
@@ -46,7 +45,8 @@ elseif PostCheck then
 		if less < chunk_size then
 			chunk_size = less
 		end
-            end
+	 end
+	 ngx.req.finish_body()
     else
 			ngx.req.read_body()
 			local args = ngx.req.get_post_args()
