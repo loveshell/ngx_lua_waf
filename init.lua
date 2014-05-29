@@ -33,16 +33,16 @@ function write(logfile,msg)
 end
 function log(method,url,data,ruletag)
     if attacklog then
-	    local realIp = getClientIp()
-	    local ua = ngx.var.http_user_agent
-    	local servername=ngx.var.server_name
-    	local time=ngx.localtime()
-	    if ua  then
-		    line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..ruletag.."\"\n"
-    	else
-	    	line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..ruletag.."\"\n"
-    	end
-	    local filename = logpath..'/'..servername.."_"..ngx.today().."_sec.log"
+        local realIp = getClientIp()
+        local ua = ngx.var.http_user_agent
+        local servername=ngx.var.server_name
+        local time=ngx.localtime()
+        if ua  then
+            line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..ruletag.."\"\n"
+        else
+            line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..ruletag.."\"\n"
+        end
+        local filename = logpath..'/'..servername.."_"..ngx.today().."_sec.log"
         write(filename,line)
     end
 end
@@ -50,7 +50,7 @@ end
 function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
     if file==nil then
-    	return
+        return
     end
     t = {}
     for line in file:lines() do
@@ -78,9 +78,9 @@ end
 
 function whiteurl()
     if WhiteCheck then
-    	if wturlrules ~=nil then
+        if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
-                if ngxmatch(ngx.var.request_uri,rule,"isjo") then
+                if ngxmatch(ngx.var.request_uri,rule,"imjo") then
                     return true 
                  end
             end
@@ -98,8 +98,8 @@ function args()
             else
                 data=val
             end
-            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"isjo") then
-				log('GET',ngx.var.request_uri,"-",rule)
+            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"imjo") then
+                log('GET',ngx.var.request_uri,"-",rule)
                 say_html()
                 return true
             end
@@ -112,7 +112,7 @@ end
 function url()
     if UrlDeny then
         for _,rule in pairs(urlrules) do
-            if rule ~="" and ngxmatch(ngx.var.request_uri,rule,"isjo") then
+            if rule ~="" and ngxmatch(ngx.var.request_uri,rule,"imjo") then
                 log('GET',ngx.var.request_uri,"-",rule)
                 say_html()
                 return true
@@ -125,19 +125,19 @@ end
 function ua()
     local ua = ngx.var.http_user_agent
     if ua ~= nil then
-	    for _,rule in pairs(uarules) do
-	        if rule ~="" and ngxmatch(ua,rule,"isjo") then
-	            log('UA',ngx.var.request_uri,"-",rule)
-	            say_html()
-	        return true
-	        end
-	    end
+        for _,rule in pairs(uarules) do
+            if rule ~="" and ngxmatch(ua,rule,"imjo") then
+                log('UA',ngx.var.request_uri,"-",rule)
+                say_html()
+            return true
+            end
+        end
     end
     return false
 end
 function body(data)
     for _,rule in pairs(postrules) do
-        if rule ~="" and ngxmatch(unescape(data),rule,"isjo") then
+        if rule ~="" and ngxmatch(unescape(data),rule,"imjo") then
             log('POST',ngx.var.request_uri,data,rule)
             say_html()
             return true
@@ -149,7 +149,7 @@ function cookie()
     local ck = ngx.var.http_cookie
     if CookieCheck and ck then
         for _,rule in pairs(ckrules) do
-            if rule ~="" and ngxmatch(ck,rule,"isjo") then
+            if rule ~="" and ngxmatch(ck,rule,"imjo") then
                 log('Cookie',ngx.var.request_uri,"-",rule)
                 say_html()
             return true
@@ -161,7 +161,7 @@ end
 
 function denycc()
     if CCDeny then
-    	local uri=ngx.var.uri
+        local uri=ngx.var.uri
         CCcount=tonumber(string.match(CCrate,'(.*)/'))
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
         local token = getClientIp()..uri
