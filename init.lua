@@ -137,7 +137,7 @@ function ua()
 end
 function body(data)
     for _,rule in pairs(postrules) do
-        if rule ~="" and ngxmatch(unescape(data),rule,"imjo") then
+        if rule ~="" and data~="" and ngxmatch(unescape(data),rule,"imjo") then
             log('POST',ngx.var.request_uri,data,rule)
             say_html()
             return true
