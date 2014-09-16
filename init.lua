@@ -80,7 +80,7 @@ function whiteurl()
     if WhiteCheck then
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
-                if ngxmatch(ngx.var.request_uri,rule,"imjo") then
+                if ngxmatch(ngx.var.host .. ngx.var.request_uri,rule,"imjo") then
                     return true 
                  end
             end
