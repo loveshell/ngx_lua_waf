@@ -72,7 +72,7 @@ function say_html()
     if Redirect then
         ngx.header.content_type = "text/html"
         ngx.say(html)
-        ngx.exit(200)
+        ngx.exit(code)
     end
 end
 
