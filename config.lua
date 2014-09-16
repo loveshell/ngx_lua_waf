@@ -11,4 +11,3 @@ ipBlocklist={"1.0.0.1"}
 CCDeny="off"
 CCrate="100/60"
 html=[[Please go away~~ ]]
-code=403
