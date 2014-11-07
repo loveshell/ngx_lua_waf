@@ -4,7 +4,7 @@ local ngxmatch=ngx.re.match
 local unescape=ngx.unescape_uri
 local get_headers = ngx.req.get_headers
 local optionIsOn = function (options) return options == "on" and true or false end
-logpath = logdir 
+logpath = logdir
 rulepath = RulePath
 UrlDeny = optionIsOn(UrlDeny)
 PostCheck = optionIsOn(postMatch)
@@ -17,12 +17,24 @@ Redirect=optionIsOn(Redirect)
 function getClientIp()
         IP = ngx.req.get_headers()["X-Real-IP"]
         if IP == nil then
-                IP  = ngx.var.remote_addr 
+                IP  = ngx.var.remote_addr
         end
         if IP == nil then
                 IP  = "unknown"
         end
         return IP
+end
+function ipToDecimal(ckip)
+    local n = 4
+    local num = 0
+    local pos = 0
+    for st, sp in function() return string.find(ckip, '.', pos, true) end do
+        n = n - 1
+        num = num + string.sub(ckip, pos, st-1) * (256 ^ n)
+        pos = sp + 1
+        if n == 1 then num = num + string.sub(ckip, pos, string.len(ckip)) end
+    end
+    return num
 end
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
@@ -81,7 +93,7 @@ function whiteurl()
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
                 if ngxmatch(ngx.var.request_uri,rule,"imjo") then
-                    return true 
+                    return true
                  end
             end
         end
@@ -203,13 +215,24 @@ end
 
 function whiteip()
     if next(ipWhitelist) ~= nil then
+        local cIP = getClientIp()
+        local numIP = 0
+        if cIP ~= "unknown" then numIP = tonumber(ipToDecimal(cIP))  end
         for _,ip in pairs(ipWhitelist) do
-            if getClientIp()==ip then
+            local pos = 0
+            local s, e = string.find(ip, '-', pos, true)
+            if s == nil and cIP == ip then
                 return true
+            elseif s ~= nil then
+                sIP = tonumber(ipToDecimal(string.sub(ip, 0, s - 1)))
+                eIP = tonumber(ipToDecimal(string.sub(ip, e + 1, string.len(ip))))
+                if numIP >= sIP and numIP <= eIP then
+                   return true
+                end
             end
         end
     end
-        return false
+    return false
 end
 
 function blockip()
