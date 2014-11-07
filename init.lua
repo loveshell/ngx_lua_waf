@@ -26,15 +26,15 @@ function getClientIp()
 end
 function ipToDecimal(ckip)
     local n = 4
-    local num = 0
+    local decimalNum = 0
     local pos = 0
-    for st, sp in function() return string.find(ckip, '.', pos, true) end do
+    for s, e in function() return string.find(ckip, '.', pos, true) end do
         n = n - 1
-        num = num + string.sub(ckip, pos, st-1) * (256 ^ n)
-        pos = sp + 1
-        if n == 1 then num = num + string.sub(ckip, pos, string.len(ckip)) end
+        decimalNum = decimalNum + string.sub(ckip, pos, s-1) * (256 ^ n)
+        pos = e + 1
+        if n == 1 then decimalNum = decimalNum + string.sub(ckip, pos, string.len(ckip)) end
     end
-    return num
+    return decimalNum
 end
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
@@ -219,8 +219,7 @@ function whiteip()
         local numIP = 0
         if cIP ~= "unknown" then numIP = tonumber(ipToDecimal(cIP))  end
         for _,ip in pairs(ipWhitelist) do
-            local pos = 0
-            local s, e = string.find(ip, '-', pos, true)
+            local s, e = string.find(ip, '-', 0, true)
             if s == nil and cIP == ip then
                 return true
             elseif s ~= nil then
@@ -236,13 +235,24 @@ function whiteip()
 end
 
 function blockip()
-     if next(ipBlocklist) ~= nil then
-         for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip then
-                 ngx.exit(403)
-                 return true
-             end
-         end
-     end
-         return false
+    if next(ipBlocklist) ~= nil then
+        local cIP = getClientIp()
+        local numIP = 0
+        if cIP ~= "unknown" then numIP = tonumber(ipToDecimal(cIP)) end
+        for _,ip in pairs(ipBlocklist) do
+            local s, e = string.find(ip, '-', 0, true)
+            if s == nil and cIP == ip then
+                ngx.exit(403)
+                return true
+            elseif s ~= nil then
+                sIP = tonumber(ipToDecimal(string.sub(ip, 0, s - 1)))
+                eIP = tonumber(ipToDecimal(string.sub(ip, e + 1, string.len(ip))))
+                if numIP >= sIP and numIP <= eIP then
+                    ngx.exit(403)
+                    return true
+                end
+            end
+        end
+    end
+        return false
 end
