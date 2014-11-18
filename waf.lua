@@ -54,7 +54,7 @@ elseif PostCheck then
 				return
 			end
 			for key, val in pairs(args) do
-				if type(val) == "table" then
+				if type(val) == "table" or val == false then
 					data=table.concat(val, ", ")
 				else
 					data=val
