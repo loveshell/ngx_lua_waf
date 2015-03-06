@@ -1,4 +1,4 @@
-\.(svn|htaccess|bash_history)
+\.(svn|htaccess|bash_history|DS_Store)
 \.(bak|inc|old|mdb|sql|backup|java|class)$
 (vhost|bbs|host|wwwroot|www|site|root|hytop|flashfxp).*.rar
 (phpmyadmin|jmx-console|jmxinvokerservlet)
