@@ -13,7 +13,7 @@ CCDeny="off"
 CCrate="100/60"
 html=[[
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=gbk2312">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>网站防火墙</title>
 <style>
 p {
