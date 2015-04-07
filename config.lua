@@ -6,6 +6,7 @@ Redirect="on"
 CookieMatch="on"
 postMatch="on" 
 whiteModule="on" 
+fileExtension={"jpeg","gif","jpg","png","bmp"}
 ipWhitelist={"127.0.0.1"}
 ipBlocklist={"1.0.0.1"}
 CCDeny="off"
