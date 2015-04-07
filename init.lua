@@ -80,7 +80,7 @@ function whiteurl()
     if WhiteCheck then
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
-                if ngxmatch(ngx.var.request_uri,rule,"imjo") then
+                if ngxmatch(ngx.var.request_uri,rule,"isjo") then
                     return true 
                  end
             end
@@ -100,7 +100,7 @@ function args()
             else
                 data=val
             end
-            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"imjo") then
+            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"isjo") then
                 log('GET',ngx.var.request_uri,"-",rule)
                 say_html()
                 return true
@@ -114,7 +114,7 @@ end
 function url()
     if UrlDeny then
         for _,rule in pairs(urlrules) do
-            if rule ~="" and ngxmatch(ngx.var.request_uri,rule,"imjo") then
+            if rule ~="" and ngxmatch(ngx.var.request_uri,rule,"isjo") then
                 log('GET',ngx.var.request_uri,"-",rule)
                 say_html()
                 return true
@@ -128,7 +128,7 @@ function ua()
     local ua = ngx.var.http_user_agent
     if ua ~= nil then
         for _,rule in pairs(uarules) do
-            if rule ~="" and ngxmatch(ua,rule,"imjo") then
+            if rule ~="" and ngxmatch(ua,rule,"isjo") then
                 log('UA',ngx.var.request_uri,"-",rule)
                 say_html()
             return true
@@ -139,7 +139,7 @@ function ua()
 end
 function body(data)
     for _,rule in pairs(postrules) do
-        if rule ~="" and data~="" and ngxmatch(unescape(data),rule,"imjo") then
+        if rule ~="" and data~="" and ngxmatch(unescape(data),rule,"isjo") then
             log('POST',ngx.var.request_uri,data,rule)
             say_html()
             return true
@@ -151,7 +151,7 @@ function cookie()
     local ck = ngx.var.http_cookie
     if CookieCheck and ck then
         for _,rule in pairs(ckrules) do
-            if rule ~="" and ngxmatch(ck,rule,"imjo") then
+            if rule ~="" and ngxmatch(ck,rule,"isjo") then
                 log('Cookie',ngx.var.request_uri,"-",rule)
                 say_html()
             return true
