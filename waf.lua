@@ -41,6 +41,20 @@ elseif PostCheck then
 	   	        return true
     	    	end
 		size = size + len(data)
+		local m = ngx.re.match(data,'Content-Disposition: form-data;(.+)filename="(.+)\\.(.*)"','ijo')
+        	if m then
+            		fileExtCheck(m[3])
+            		filetranslate = true
+        	else
+            		if ngx.re.find(data,"Content-Disposition:",'isjo') then
+                		filetranslate = false
+            		end
+            		if filetranslate==false then
+            			if body(data) then
+                    			return true
+                		end
+            		end
+        	end
 		local less = content_length - size
 		if less < chunk_size then
 			chunk_size = less
