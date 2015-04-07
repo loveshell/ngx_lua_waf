@@ -71,8 +71,9 @@ ckrules=read_rule('cookie')
 function say_html()
     if Redirect then
         ngx.header.content_type = "text/html"
+        ngx.status = ngx.HTTP_FORBIDDEN
         ngx.say(html)
-        ngx.exit(200)
+        ngx.exit(ngx.status)
     end
 end
 
