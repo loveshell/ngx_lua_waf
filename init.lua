@@ -94,7 +94,7 @@ function args()
         local args = ngx.req.get_uri_args()
         for key, val in pairs(args) do
             if type(val)=='table' then
-                if val == false then
+                if val ~= false then
                     data=table.concat(val, " ")
                 end
             else
