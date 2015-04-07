@@ -88,7 +88,21 @@ function whiteurl()
     end
     return false
 end
-
+function fileExtCheck(ext)
+    local items = Set(fileExtension)
+    if ext then
+        if not items[ext] then
+			log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
+            say_html()
+        end
+    end
+    return false
+end
+function Set (list)
+  local set = {}
+  for _, l in ipairs(list) do set[l] = true end
+  return set
+end
 function args()
     for _,rule in pairs(argsrules) do
         local args = ngx.req.get_uri_args()
