@@ -21,20 +21,8 @@ p {
 }
 ul{ list-style-type:none;}
 li{ list-style-type:none;}
-</style><style type="text/css"></style><style id="style-1-cropbar-clipper">
-.en-markup-crop-options {
-    top: 18px !important;
-    left: 50% !important;
-    margin-left: -100px !important;
-    width: 200px !important;
-    border: 2px rgba(255,255,255,.38) solid !important;
-    border-radius: 4px !important;
-}
-
-.en-markup-crop-options div div:first-of-type {
-    margin-left: 0px !important;
-}
-</style></head>
+</style>
+</head>
 
 <body style=" padding:0; margin:0; font:14px/1.5 Microsoft Yahei, 宋体,sans-serif; color:#555;">
 
