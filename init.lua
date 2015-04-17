@@ -91,6 +91,7 @@ function whiteurl()
 end
 function fileExtCheck(ext)
     local items = Set(fileExtension)
+    ext=string.lower(ext)
     if ext then
         if not items[ext] then
 			log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
