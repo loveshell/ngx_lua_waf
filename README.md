@@ -63,7 +63,7 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         --是否拦截post攻击
         whiteModule = "on" 
         --是否开启URL白名单
-        fileExtension={"jpeg","gif","jpg","png","bmp","rar","zip","tar.gz"}
+        black_fileExt={"php","jsp"}
         --填写可上传文件后缀类型
         ipWhitelist={"127.0.0.1"}
         --ip白名单，多个ip用逗号分隔
