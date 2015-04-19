@@ -90,11 +90,11 @@ function whiteurl()
     return false
 end
 function fileExtCheck(ext)
-    local items = Set(fileExtension)
+    local items = Set(black_fileExt)
     ext=string.lower(ext)
     if ext then
-        if not items[ext] then
-			log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
+        if items[ext] then
+	    log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
             say_html()
         end
     end
