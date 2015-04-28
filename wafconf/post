@@ -1,4 +1,3 @@
-\.\./
 select.+(from|limit)
 (?:(union(.*?)select))
 having|rongjitest
