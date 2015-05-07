@@ -15,6 +15,8 @@ PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
+
+
 function getClientIp()
         IP = ngx.req.get_headers()["X-Real-IP"]
         if IP == nil then
@@ -65,10 +67,14 @@ urlrules=read_rule('url')
 argsrules=read_rule('args')
 uarules=read_rule('user-agent')
 wturlrules=read_rule('whiteurl')
+white_servername_list = read_rule('white_servername')
 postrules=read_rule('post')
 ckrules=read_rule('cookie')
-white_servername = read_rule('white_servername')
 
+function debug(info)
+    write("/var/log/nginx/waf/debug.log", info)
+end
+    
 
 function say_html()
     if Redirect then
@@ -93,22 +99,28 @@ function whiteurl()
 end
 
 
+
 function white_servername()
-    if WhiteServerName then:
+    debug("white servername")
+    if 1==1 then
     	host = ngx.req.get_headers()["Host"]
     	if host == nil then
+            debug("nil host")
     	    return false;
-    	if white_servername ~= nil then
-    	    for _, rule in pairs(white_servername) do
+        end
+        debug(host)
+    	if white_servername_list ~= nil then
+    	    for _, rule in pairs(white_servername_list) do
     	    	if ngxmatch(host, rule, "isjo") then
     	    	    return true
     	    	end
             end
         end
-    return false
+        return false
+    end
 end
 
-        
+
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
