@@ -10,6 +10,7 @@ UrlDeny = optionIsOn(UrlDeny)
 PostCheck = optionIsOn(postMatch)
 CookieCheck = optionIsOn(cookieMatch)
 WhiteCheck = optionIsOn(whiteModule)
+WhiteServerName = optionIsOn(WhiteServerName)
 PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
@@ -66,6 +67,7 @@ uarules=read_rule('user-agent')
 wturlrules=read_rule('whiteurl')
 postrules=read_rule('post')
 ckrules=read_rule('cookie')
+white_servername = read_rule('white_servername')
 
 
 function say_html()
@@ -89,6 +91,24 @@ function whiteurl()
     end
     return false
 end
+
+
+function white_servername()
+    if WhiteServerName then:
+    	host = ngx.req.get_headers()["Host"]
+    	if host == nil then
+    	    return false;
+    	if white_servername ~= nil then
+    	    for _, rule in pairs(white_servername) do
+    	    	if ngxmatch(host, rule, "isjo") then
+    	    	    return true
+    	    	end
+            end
+        end
+    return false
+end
+
+        
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
