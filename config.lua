@@ -5,6 +5,7 @@ UrlDeny="on"
 Redirect="on"
 CookieMatch="on"
 postMatch="on" 
+WhiteServerName="on"
 whiteModule="on" 
 black_fileExt={"php","jsp"}
 ipWhitelist={"127.0.0.1"}
