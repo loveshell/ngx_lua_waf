@@ -6,6 +6,7 @@ Redirect="on"
 CookieMatch="on"
 postMatch="on" 
 whiteModule="on" 
+whiteServername="off"
 black_fileExt={"php","jsp"}
 ipWhitelist={"127.0.0.1"}
 ipBlocklist={"1.0.0.1"}
