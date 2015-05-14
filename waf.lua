@@ -46,7 +46,7 @@ elseif PostCheck then
             		fileExtCheck(m[3])
             		filetranslate = true
         	else
-            		if ngx.re.match(data,"Content-Disposition:",'isjo') then
+            		if ngxmatch(data,"Content-Disposition:",'isjo') then
                 		filetranslate = false
             		end
             		if filetranslate==false then
