@@ -41,7 +41,7 @@ elseif PostCheck then
 	   	        return true
     	    	end
 		size = size + len(data)
-		local m = ngx.re.match(data,'Content-Disposition: form-data;(.+)filename="(.+)\\.(.*)"','ijo')
+		local m = ngxmatch(data,'Content-Disposition: form-data;(.+)filename="(.+)\\.(.*)"','ijo')
         	if m then
             		fileExtCheck(m[3])
             		filetranslate = true
