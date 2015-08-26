@@ -63,6 +63,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         --是否拦截post攻击
         whiteModule = "on" 
         --是否开启URL白名单
+        whiteServername = "off" 
+        --是否开启host(对应nginx里面的server_name)白名单
         black_fileExt={"php","jsp"}
         --填写可上传文件后缀类型
         ipWhitelist={"127.0.0.1"}
@@ -111,6 +113,7 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 		post是只在post请求过滤的规则		
 		whitelist是白名单，里面的url匹配到不做过滤		
 		user-agent是对user-agent的过滤规则
+        white_servername是里面匹配到的host不过滤
 	
 
 	默认开启了get和post过滤，需要开启cookie过滤的，编辑waf.lua取消部分--注释即可
