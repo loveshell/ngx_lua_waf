@@ -14,6 +14,7 @@ PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
+
 function getClientIp()
         IP = ngx.req.get_headers()["X-Real-IP"]
         if IP == nil then
@@ -24,6 +25,7 @@ function getClientIp()
         end
         return IP
 end
+
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
     if fd == nil then return end
@@ -31,6 +33,7 @@ function write(logfile,msg)
     fd:flush()
     fd:close()
 end
+
 function log(method,url,data,ruletag)
     if attacklog then
         local realIp = getClientIp()
@@ -46,7 +49,8 @@ function log(method,url,data,ruletag)
         write(filename,line)
     end
 end
-------------------------------------规则读取函数-------------------------------------------------------------------
+
+------------------------------------规则读取函数-----------------------------------------
 function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
     if file==nil then
@@ -89,6 +93,7 @@ function whiteurl()
     end
     return false
 end
+
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
@@ -102,11 +107,13 @@ function fileExtCheck(ext)
     end
     return false
 end
+
 function Set (list)
   local set = {}
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
+
 function args()
     for _,rule in pairs(argsrules) do
         local args = ngx.req.get_uri_args()
@@ -155,6 +162,7 @@ function ua()
     end
     return false
 end
+
 function body(data)
     for _,rule in pairs(postrules) do
         if rule ~="" and data~="" and ngxmatch(unescape(data),rule,"isjo") then
@@ -165,6 +173,7 @@ function body(data)
     end
     return false
 end
+
 function cookie()
     local ck = ngx.var.http_cookie
     if CookieCheck and ck then
@@ -186,10 +195,18 @@ function denycc()
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
         local token = getClientIp()..uri
         local limit = ngx.shared.limit
-        local req,_=limit:get(token)
+        local req,_ = limit:get(token)
+        local ip = getClientIp
+        local block,_ = limit:get(ip)
+
+        if block then
+            ngx.exit(503)
+        end
+
         if req then
             if req > CCcount then
-                 ngx.exit(503)
+                limit:set(ip,1,DenySeconds)
+                ngx.exit(503)
                 return true
             else
                  limit:incr(token,1)
