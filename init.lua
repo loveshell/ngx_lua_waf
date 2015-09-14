@@ -196,7 +196,7 @@ function denycc()
         local token = getClientIp()..uri
         local limit = ngx.shared.limit
         local req,_ = limit:get(token)
-        local ip = getClientIp
+        local ip = getClientIp()
         local block,_ = limit:get(ip)
 
         if block then
