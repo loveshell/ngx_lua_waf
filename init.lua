@@ -250,7 +250,7 @@ end
 function blockip()
      if next(ipBlocklist) ~= nil then
          for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip then
+             if getClientIp()==ip or ip=="0.0.0.0" then
                  ngx.exit(403)
                  return true
              end
