@@ -281,7 +281,7 @@ function whiteip()
     if next(ipWhitelist) ~= nil then
         ip = getClientIp()
         for _,wip in pairs(ipWhitelist) do
-            if ip = wip or innet(ip, wip) then
+            if ip == wip or innet(ip, wip) then
                 return true
             end
         end
