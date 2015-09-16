@@ -236,10 +236,52 @@ function get_boundary()
     return match(header, ";%s*boundary=([^\",;]+)")
 end
 
+function string.split(str, delimiter)
+        if str==nil or str=='' or delimiter==nil then
+                return nil
+        end
+
+    local result = {}
+    for match in (str..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match)
+    end
+    return result
+end
+
+function innet(ip, network)
+    local star = ''
+    for i in string.gmatch(network, '%*') do
+        star = star..i
+    end
+
+    local ip = string.split(ip, '%.')
+    local network = string.split(network, '%.')
+    if ip == nil or network == nil then
+        return false
+    end
+
+    local ip_prefix = {}
+    local network_prefix = {}
+    for i=1, 4-string.len(star) do
+        ip_prefix[i] = ip[i]
+        network_prefix[i] = network[i]
+    end
+
+    ip_prefix = table.concat(ip_prefix, '.')
+    network_prefix = table.concat(network_prefix, '.')
+
+    if ip_prefix == network_prefix then
+        return true
+    else
+        return false
+    end
+end
+
 function whiteip()
     if next(ipWhitelist) ~= nil then
-        for _,ip in pairs(ipWhitelist) do
-            if getClientIp()==ip then
+        ip = getClientIp()
+        for _,wip in pairs(ipWhitelist) do
+            if ip = wip or innet(ip, wip) then
                 return true
             end
         end
@@ -249,8 +291,9 @@ end
 
 function blockip()
      if next(ipBlocklist) ~= nil then
-         for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip or ip=="0.0.0.0" then
+        ip = getClientIp()
+         for _,bip in pairs(ipBlocklist) do
+             if ip == bip or ip=="0.0.0.0" or innet(ip, bip) then
                  ngx.exit(403)
                  return true
              end
