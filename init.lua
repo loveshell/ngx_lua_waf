@@ -14,6 +14,7 @@ PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
+
 function getClientIp()
         IP = ngx.req.get_headers()["X-Real-IP"]
         if IP == nil then
@@ -24,6 +25,7 @@ function getClientIp()
         end
         return IP
 end
+
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
     if fd == nil then return end
@@ -31,6 +33,7 @@ function write(logfile,msg)
     fd:flush()
     fd:close()
 end
+
 function log(method,url,data,ruletag)
     if attacklog then
         local realIp = getClientIp()
@@ -46,7 +49,8 @@ function log(method,url,data,ruletag)
         write(filename,line)
     end
 end
-------------------------------------规则读取函数-------------------------------------------------------------------
+
+------------------------------------规则读取函数-----------------------------------------
 function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
     if file==nil then
@@ -89,6 +93,7 @@ function whiteurl()
     end
     return false
 end
+
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
@@ -102,11 +107,13 @@ function fileExtCheck(ext)
     end
     return false
 end
+
 function Set (list)
   local set = {}
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
+
 function args()
     for _,rule in pairs(argsrules) do
         local args = ngx.req.get_uri_args()
@@ -155,6 +162,7 @@ function ua()
     end
     return false
 end
+
 function body(data)
     for _,rule in pairs(postrules) do
         if rule ~="" and data~="" and ngxmatch(unescape(data),rule,"isjo") then
@@ -165,6 +173,7 @@ function body(data)
     end
     return false
 end
+
 function cookie()
     local ck = ngx.var.http_cookie
     if CookieCheck and ck then
@@ -186,10 +195,18 @@ function denycc()
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
         local token = getClientIp()..uri
         local limit = ngx.shared.limit
-        local req,_=limit:get(token)
+        local req,_ = limit:get(token)
+        local ip = getClientIp()
+        local block,_ = limit:get(ip)
+
+        if block then
+            ngx.exit(503)
+        end
+
         if req then
             if req > CCcount then
-                 ngx.exit(503)
+                limit:set(ip,1,DenySeconds)
+                ngx.exit(503)
                 return true
             else
                  limit:incr(token,1)
@@ -219,10 +236,52 @@ function get_boundary()
     return match(header, ";%s*boundary=([^\",;]+)")
 end
 
+function string.split(str, delimiter)
+        if str==nil or str=='' or delimiter==nil then
+                return nil
+        end
+
+    local result = {}
+    for match in (str..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match)
+    end
+    return result
+end
+
+function innet(ip, network)
+    local star = ''
+    for i in string.gmatch(network, '%*') do
+        star = star..i
+    end
+
+    local ip = string.split(ip, '%.')
+    local network = string.split(network, '%.')
+    if ip == nil or network == nil then
+        return false
+    end
+
+    local ip_prefix = {}
+    local network_prefix = {}
+    for i=1, 4-string.len(star) do
+        ip_prefix[i] = ip[i]
+        network_prefix[i] = network[i]
+    end
+
+    ip_prefix = table.concat(ip_prefix, '.')
+    network_prefix = table.concat(network_prefix, '.')
+
+    if ip_prefix == network_prefix then
+        return true
+    else
+        return false
+    end
+end
+
 function whiteip()
     if next(ipWhitelist) ~= nil then
-        for _,ip in pairs(ipWhitelist) do
-            if getClientIp()==ip then
+        ip = getClientIp()
+        for _,wip in pairs(ipWhitelist) do
+            if ip == wip or innet(ip, wip) then
                 return true
             end
         end
@@ -232,8 +291,9 @@ end
 
 function blockip()
      if next(ipBlocklist) ~= nil then
-         for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip then
+        ip = getClientIp()
+         for _,bip in pairs(ipBlocklist) do
+             if ip == bip or ip=="0.0.0.0" or innet(ip, bip) then
                  ngx.exit(403)
                  return true
              end
