@@ -106,8 +106,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 
 	过滤规则在wafconf下，可根据需求自行调整，每条规则需换行,或者用|分割
 	
-		global是全局过滤文件，里面的规则对post和get都过滤		
-		get是只在get请求过滤的规则		
+		args里面的规则get参数进行过滤的
+		url是只在get请求url过滤的规则		
 		post是只在post请求过滤的规则		
 		whitelist是白名单，里面的url匹配到不做过滤		
 		user-agent是对user-agent的过滤规则
