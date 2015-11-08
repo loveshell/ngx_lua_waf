@@ -8,6 +8,7 @@ postMatch="on"
 whiteModule="on" 
 black_fileExt={"php","jsp"}
 ipWhitelist={"127.0.0.1"}
+servernameWhitelist={"www.baidu.com"}
 ipBlocklist={"1.0.0.1"}
 CCDeny="off"
 CCrate="100/60"
