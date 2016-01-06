@@ -107,18 +107,17 @@ function Set (list)
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
+
 function args()
     for _,rule in pairs(argsrules) do
         local args = ngx.req.get_uri_args()
         for key, val in pairs(args) do
             if type(val)=='table' then
-                if val ~= false then
-                    data=table.concat(val, " ")
-                end
+                data=table.concat(val, " ")
             else
                 data=val
             end
-            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"isjo") then
+            if data and type(data) ~= "boolean" and rule ~="" and ngxmatch(unescape(data),rule,"ijos") then
                 log('GET',ngx.var.request_uri,"-",rule)
                 say_html()
                 return true
