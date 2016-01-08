@@ -96,7 +96,6 @@ function whitehost()
 	    local items = Set(hostWhiteList)
 	    for host in pairs(items) do
 	    	if ngxmatch(ngx.var.host, host, "isjo") then
-				log('POST',ngx.var.request_uri,"-","white host".. host)
 	    		return true
 	    	end
 	    end
