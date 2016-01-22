@@ -1,4 +1,6 @@
 select.+(from|limit)
+delete from
+update.+set.+\=
 (?:(union(.*?)select))
 having|rongjitest
 sleep\((\s*)(\d*)(\s*)\)
@@ -17,3 +19,7 @@ java\.lang
 \$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
 \<(iframe|script|body|img|layer|div|meta|style|base|object|input)
 (onmouseover|onerror|onload)\=
+drop (table|database).+
+truncate table
+insert into.+(select|values)
+create (table|database)

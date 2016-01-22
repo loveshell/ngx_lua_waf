@@ -15,14 +15,24 @@ attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
 function getClientIp()
-        IP = ngx.req.get_headers()["X-Real-IP"]
-        if IP == nil then
-                IP  = ngx.var.remote_addr 
-        end
-        if IP == nil then
-                IP  = "unknown"
-        end
-        return IP
+    IP = ngx.req.get_headers()["X-Real-IP"]
+    if IP == nil then
+        IP  = ngx.var.remote_addr 
+    end
+    if IP == nil then
+        IP = "unknown"
+    end
+    return IP
+end
+function getSLBIP()
+    IP = ngx.req.get_headers()["x_forwarded_for"]
+    if IP == nil then
+        IP = ngx.var.remote_addr
+    end
+    if IP == nil then
+        IP = "unknown"
+    end
+    return IP
 end
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
@@ -34,13 +44,14 @@ end
 function log(method,url,data,ruletag)
     if attacklog then
         local realIp = getClientIp()
+        local xTransIP = getSLBIP()
         local ua = ngx.var.http_user_agent
         local servername=ngx.var.server_name
         local time=ngx.localtime()
         if ua  then
-            line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..ruletag.."\"\n"
+            line = realIp.." "..xTransIP.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..ruletag.."\"\n"
         else
-            line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..ruletag.."\"\n"
+            line = realIp.." "..xTransIP.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..ruletag.."\"\n"
         end
         local filename = logpath..'/'..servername.."_"..ngx.today().."_sec.log"
         write(filename,line)
@@ -67,6 +78,13 @@ wturlrules=read_rule('whiteurl')
 postrules=read_rule('post')
 ckrules=read_rule('cookie')
 
+function getWhiteList()
+    return read_rule("ipwhitelist")
+end 
+
+function getBlackList()
+    return read_rule("ipblacklist")
+end
 
 function say_html()
     if Redirect then
@@ -77,13 +95,23 @@ function say_html()
     end
 end
 
+function say_html_503()
+    if Redirect then
+        ngx.header.content_type = "text/html"
+        ngx.status = ngx.HTTP_SERVICE_UNAVAILABLE
+        ngx.say(html503)
+        ngx.exit(ngx.status)
+    end
+end
+
+
 function whiteurl()
     if WhiteCheck then
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
                 if ngxmatch(ngx.var.uri,rule,"isjo") then
                     return true 
-                 end
+                end
             end
         end
     end
@@ -95,17 +123,17 @@ function fileExtCheck(ext)
     if ext then
         for rule in pairs(items) do
             if ngx.re.match(ext,rule,"isjo") then
-	        log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
-            say_html()
+                log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
+                say_html()
             end
         end
     end
     return false
 end
 function Set (list)
-  local set = {}
-  for _, l in ipairs(list) do set[l] = true end
-  return set
+    local set = {}
+    for _, l in ipairs(list) do set[l] = true end
+    return set
 end
 
 function args()
@@ -127,7 +155,6 @@ function args()
     return false
 end
 
-
 function url()
     if UrlDeny then
         for _,rule in pairs(urlrules) do
@@ -148,7 +175,7 @@ function ua()
             if rule ~="" and ngxmatch(ua,rule,"isjo") then
                 log('UA',ngx.var.request_uri,"-",rule)
                 say_html()
-            return true
+                return true
             end
         end
     end
@@ -171,7 +198,7 @@ function cookie()
             if rule ~="" and ngxmatch(ck,rule,"isjo") then
                 log('Cookie',ngx.var.request_uri,"-",rule)
                 say_html()
-            return true
+                return true
             end
         end
     end
@@ -180,6 +207,17 @@ end
 
 function denycc()
     if CCDeny then
+        -- Yep, use wafconfig 
+        ccconf = read_rule("ccrate")
+        if next(ccconf) ~= nil then
+            for _, conf in pairs(ccconf) do
+                CCrate = conf
+                conf = nil
+                break
+            end
+        end
+        ccconf = nil
+        -- Done
         local uri=ngx.var.uri
         CCcount=tonumber(string.match(CCrate,'(.*)/'))
         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
@@ -188,10 +226,13 @@ function denycc()
         local req,_=limit:get(token)
         if req then
             if req > CCcount then
-                 ngx.exit(503)
+                -- ngx.say(html503)
+                -- ngx.exit(503)
+                log('CC',ngx.var.request_uri,"-","We are under attack!")
+                say_html_503()
                 return true
             else
-                 limit:incr(token,1)
+                limit:incr(token,1)
             end
         else
             limit:set(token,1,CCseconds)
@@ -219,6 +260,7 @@ function get_boundary()
 end
 
 function whiteip()
+    ipWhitelist = getWhiteList()
     if next(ipWhitelist) ~= nil then
         for _,ip in pairs(ipWhitelist) do
             if getClientIp()==ip then
@@ -226,17 +268,39 @@ function whiteip()
             end
         end
     end
-        return false
+    return false
 end
 
 function blockip()
-     if next(ipBlocklist) ~= nil then
-         for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip then
-                 ngx.exit(403)
-                 return true
-             end
-         end
-     end
-         return false
+    ipBlocklist = getBlackList()
+    if next(ipBlocklist) ~= nil then
+        for _,ip in pairs(ipBlocklist) do
+            if getClientIp()==ip then
+                if path403 == nil then
+                    path403 = "403"
+                end
+                if string.match(ngx.var.request_uri, '/(.*)') ~= path403 then
+                    p = string.match(ngx.var.request_uri, '/([a-zA-Z0-9]*)')
+                    if next(uriWhitelist) ~= nil and p ~= nil then
+                        deny = true
+                        for _,uri in pairs(uriWhitelist) do
+                            if ngx.re.match(p,uri,"isjo") then
+                                deny = false
+                                break
+                            end
+                        end
+                        if deny == true then
+                            log('DENY',ngx.var.request_uri,"-","GO HELL!")
+                            say_html()
+                        end
+                        return true
+                    end
+                end
+
+                return true
+            end
+        end
+    end
+    return false
 end
+

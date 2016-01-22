@@ -111,6 +111,9 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 		post是只在post请求过滤的规则		
 		whitelist是白名单，里面的url匹配到不做过滤		
 		user-agent是对user-agent的过滤规则
+        ipwhitelist是IP白名单，一行一个IP
+        ipblacklist是IP黑名单，一行一个IP
+        ccrate是CC防护的动态规则，修改后生效
 	
 
 	默认开启了get和post过滤，需要开启cookie过滤的，编辑waf.lua取消部分--注释即可

@@ -2,6 +2,8 @@
 \:\$
 \$\{
 select.+(from|limit)
+delete from
+update.+set.+\=
 (?:(union(.*?)select))
 having|rongjitest
 sleep\((\s*)(\d*)(\s*)\)
@@ -18,3 +20,7 @@ xwork\.MethodAccessor
 (gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data)\:\/
 java\.lang
 \$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
+drop (table|database).+
+truncate table
+insert into.+(select|values)
+create (table|database)
