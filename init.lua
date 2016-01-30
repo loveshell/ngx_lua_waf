@@ -109,9 +109,14 @@ function args()
         local args = ngx.req.get_uri_args()
         for key, val in pairs(args) do
             if type(val)=='table' then
-                if val ~= false then
-                    data=table.concat(val, " ")
+                 local t={}
+                 for k,v in pairs(val) do
+                    if v == true then
+                        v=""
+                    end
+                    table.insert(t,v)
                 end
+                data=table.concat(t, " ")
             else
                 data=val
             end
