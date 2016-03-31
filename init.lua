@@ -60,6 +60,7 @@ end
 urlrules=read_rule('url')
 argsrules=read_rule('args')
 uarules=read_rule('user-agent')
+whiteuarules=read_rule('white-user-agent')
 wturlrules=read_rule('whiteurl')
 postrules=read_rule('post')
 ckrules=read_rule('cookie')
@@ -230,6 +231,18 @@ function whiteip()
         end
     end
         return false
+end
+
+function whiteua()
+    local ua = ngx.var.http_user_agent
+    if ua ~= nil then
+        for _,rule in pairs(whiteuarules) do
+            if rule ~="" and ngxmatch(ua,rule,"isjo") then
+                return true
+            end
+        end
+    end
+    return false
 end
 
 function blockip()
