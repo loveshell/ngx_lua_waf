@@ -243,3 +243,15 @@ function blockip()
      end
          return false
 end
+
+function whiteSvrName()
+   if next(servernameWhitelist) ~= nil then
+       for _,svrname in pairs(servernameWhitelist) do
+           if ngx.var.server_name == svrname then
+               return true
+           end
+       end
+   end
+       return false
+end
+
