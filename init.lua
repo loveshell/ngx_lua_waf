@@ -106,6 +106,11 @@ function Set (list)
 end
 function args()
     for _,rule in pairs(argsrules) do
+        if ngxmatch(unescape(ngx.var.request_uri),rule,"isjo") then
+                log('test',ngx.var.request_uri,"-",rule)
+                say_html()
+                return true
+        end
         local args = ngx.req.get_uri_args()
         for key, val in pairs(args) do
             if type(val)=='table' then
