@@ -10,6 +10,7 @@ UrlDeny = optionIsOn(UrlDeny)
 PostCheck = optionIsOn(postMatch)
 CookieCheck = optionIsOn(cookieMatch)
 WhiteCheck = optionIsOn(whiteModule)
+WhiteHostCheck = optionIsOn(whiteHostModule)
 PathInfoFix = optionIsOn(PathInfoFix)
 attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
@@ -86,6 +87,19 @@ function whiteurl()
     end
     return false
 end
+
+function whitehost()
+	if WhiteHostCheck then
+	    local items = Set(hostWhiteList)
+	    for host in pairs(items) do
+	    	if ngxmatch(ngx.var.host, host, "isjo") then
+	    		return true
+	    	end
+	    end
+	end
+	return false
+end
+
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
