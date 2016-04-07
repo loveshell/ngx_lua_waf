@@ -110,7 +110,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 		url是只在get请求url过滤的规则		
 		post是只在post请求过滤的规则		
 		whitelist是白名单，里面的url匹配到不做过滤		
-		user-agent是对user-agent的过滤规则
+        user-agent是对user-agent的过滤规则
+		white-user-agent是user-agent白名单,里面的user-agent匹配到不做过滤
 	
 
 	默认开启了get和post过滤，需要开启cookie过滤的，编辑waf.lua取消部分--注释即可
