@@ -9,6 +9,7 @@ elseif ngx.var.http_Acunetix_Aspect then
 elseif ngx.var.http_X_Scan_Memo then
     ngx.exit(444)
 elseif whiteurl() then
+elseif white_servername() then
 elseif ua() then
 elseif url() then
 elseif args() then
