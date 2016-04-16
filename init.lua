@@ -90,7 +90,7 @@ function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
     if ext then
-        for rule in pairs(items) do
+        for rule,_ in pairs(items) do
             if ngx.re.match(ext,rule,"isjo") then
 	        log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
             say_html()
