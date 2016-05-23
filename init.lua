@@ -78,9 +78,18 @@ function whiteurl()
     if WhiteCheck then
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
-                if ngxmatch(ngx.var.uri,rule,"isjo") then
-                    return true 
-                 end
+            --针对site:开始的进行域名匹配。增加白名单用处。
+	        local sitemod,_=string.find(rule,"site:")
+	        if sitemod==1 then
+	        	rule=string.gsub(rule,"site:","",1)
+	        	if ngxmatch(ngx.var.host..ngx.var.uri,rule,"isjo") then
+                    	return true 
+                	end
+	        else
+            		if ngxmatch(ngx.var.uri,rule,"isjo") then
+                    	return true 
+                	end
+            	end
             end
         end
     end
