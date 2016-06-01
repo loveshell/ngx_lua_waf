@@ -15,10 +15,7 @@ attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
 function getClientIp()
-        IP = ngx.req.get_headers()["X-Real-IP"]
-        if IP == nil then
-                IP  = ngx.var.remote_addr 
-        end
+        IP  = ngx.var.remote_addr 
         if IP == nil then
                 IP  = "unknown"
         end
@@ -112,9 +109,14 @@ function args()
         local args = ngx.req.get_uri_args()
         for key, val in pairs(args) do
             if type(val)=='table' then
-                if val ~= false then
-                    data=table.concat(val, " ")
+                 local t={}
+                 for k,v in pairs(val) do
+                    if v == true then
+                        v=""
+                    end
+                    table.insert(t,v)
                 end
+                data=table.concat(t, " ")
             else
                 data=val
             end

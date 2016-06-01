@@ -70,12 +70,15 @@ elseif PostCheck then
 			end
 			for key, val in pairs(args) do
 				if type(val) == "table" then
+					if type(val[1]) == "boolean" then
+						return
+					end
 					data=table.concat(val, ", ")
 				else
 					data=val
 				end
 				if data and type(data) ~= "boolean" and body(data) then
-                			return true
+                			body(key)
 				end
 			end
 		end
