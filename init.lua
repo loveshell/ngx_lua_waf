@@ -193,16 +193,15 @@ function denyCC(cc_rate, cc_deny_seconds)
     cc_seconds = tonumber(string.match(cc_rate, '/(.*)'))
     local token = getClientIp()..uri
     local limit = ngx.shared.limit
-    local req, _ = limit:get(token)
+    local req, _ = limit:get(token) -- 127.0.0.1_/price/v1.0: 10
     local ip = getClientIp()
-    local block, _ = limit:get(ip)
+    local block, _ = limit:get(ip) -- 127.0.0.1: 1
 
     if block then
         if debug then
             ngx.say('Deny by waf.')
+            ngx.exit('200')
             return false
-        elseif cc_redirect then
-            ngx.redirect(cc_redirect_url)
         else
             ngx.exit(404)
         end
@@ -219,7 +218,7 @@ function denyCC(cc_rate, cc_deny_seconds)
     else
         limit:set(token, 1, cc_seconds)
     end
-    return true
+    return false
 end
 
 -- function get_boundary()
@@ -252,56 +251,36 @@ end
 --     return result
 -- end
 
--- function innet(ip, network)
---     local star = ''
---     for i in string.gmatch(network, '%*') do
---         star = star..i
---     end
+function innet(ip, network)
+    matched = string.match(ip, network)
+    if match then
+        return true
+    else
+        return false
+    end
+end
 
---     local ip = string.split(ip, '%.')
---     local network = string.split(network, '%.')
---     if ip == nil or network == nil then
---         return false
---     end
+function whiteIP()
+    if next(ip_white_list) ~= nil then
+        ip = getClientIp()
+        for _, wip in pairs(ip_white_list) do
+            if ip == wip or innet(ip, wip) then
+                return true
+            end
+        end
+    end
+    return false
+end
 
---     local ip_prefix = {}
---     local network_prefix = {}
---     for i=1, 4-string.len(star) do
---         ip_prefix[i] = ip[i]
---         network_prefix[i] = network[i]
---     end
-
---     ip_prefix = table.concat(ip_prefix, '.')
---     network_prefix = table.concat(network_prefix, '.')
-
---     if ip_prefix == network_prefix then
---         return true
---     else
---         return false
---     end
--- end
-
--- function whiteip()
---     if next(ipWhitelist) ~= nil then
---         ip = getClientIp()
---         for _,wip in pairs(ipWhitelist) do
---             if ip == wip or innet(ip, wip) then
---                 return true
---             end
---         end
---     end
---         return false
--- end
-
--- function blockip()
---      if next(ipBlocklist) ~= nil then
---         ip = getClientIp()
---          for _,bip in pairs(ipBlocklist) do
---              if ip == bip or ip=="0.0.0.0" or innet(ip, bip) then
---                  ngx.exit(403)
---                  return true
---              end
---          end
---      end
---          return false
--- end
+function blackIP()
+     if next(ip_black_list) ~= nil then
+        ip = getClientIp()
+         for _, bip in pairs(ip_black_list) do
+             if ip == bip or ip == "0.0.0.0" or innet(ip, bip) then
+                 ngx.exit(403)
+                 return true
+             end
+         end
+     end
+     return false
+end
