@@ -265,9 +265,9 @@ function whiteIP()
         ip = getClientIp()
         for _, wip in pairs(ip_white_list) do
             if ip == wip or innet(ip, wip) then
-+                if debug then
-+                    ngx.say(ip.."in white list <br />")
-+                end
+                if debug then
+                    ngx.say(ip.."in white list <br />")
+                end
                  return true
              end
         end
@@ -281,8 +281,8 @@ function blackIP()
          for _, bip in pairs(ip_black_list) do
              if ip == bip or ip == "0.0.0.0" or innet(ip, bip) then
                  if debug then
-+                    ngx.say(ip.."in black list <br/>")
-+                end
+                    ngx.say(ip.."in black list <br/>")
+                end
                  ngx.exit(403)
                  return true
              end
