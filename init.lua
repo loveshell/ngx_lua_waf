@@ -28,15 +28,15 @@ function log(method, url, data, tag)
     if attack_log then
         local realIp = getClientIp()
         local ua = ngx.var.http_user_agent
-        local servername=ngx.var.server_name
-        local time=ngx.localtime()
-        if ua  then
+        local servername = ngx.var.server_name
+        local time = ngx.localtime()
+        if ua then
             line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\"  \""..ua.."\" \""..tag.."\"\n"
         else
             line = realIp.." ["..time.."] \""..method.." "..servername..url.."\" \""..data.."\" - \""..tag.."\"\n"
         end
         local filename = logpath..'/'..servername.."_"..ngx.today().."_sec.log"
-        write(filename,line)
+        write(filename, line)
     end
 end
 
@@ -201,7 +201,7 @@ function denyCC(cc_rate, cc_deny_seconds)
         if debug then
             ngx.say('Deny by waf.')
             ngx.exit('200')
-            return false
+            return true
         else
             ngx.exit(404)
         end
@@ -211,7 +211,7 @@ function denyCC(cc_rate, cc_deny_seconds)
         if req > cc_count then
             limit:set(ip, 1, cc_deny_seconds)
             ngx.exit(404)
-            return false
+            return true
         else
              limit:incr(token, 1)
         end
@@ -252,7 +252,7 @@ end
 -- end
 
 function innet(ip, network)
-    matched = string.match(ip, network)
+    matched = string.match(network, ip)
     if match then
         return true
     else
