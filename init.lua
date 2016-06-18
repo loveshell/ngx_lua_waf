@@ -187,7 +187,7 @@ end
 --     return false
 -- end
 
-function denyCC(cc_rate, cc_deny_seconds)
+function denyCC()
     local uri = ngx.var.uri
     cc_count = tonumber(string.match(cc_rate, '(.*)/'))
     cc_seconds = tonumber(string.match(cc_rate, '/(.*)'))
@@ -282,7 +282,7 @@ function blackIP()
              if ip == bip or ip == "0.0.0.0" or innet(ip, bip) then
                  if debug then
                     ngx.say(ip.."in black list <br/>")
-                end
+                 end
                  ngx.exit(403)
                  return true
              end
