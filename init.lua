@@ -55,12 +55,12 @@ function readRule(var)
     return(t)
 end
 
-url_rules = read_rule('url')
-white_url_rules = read_rule('white_url')
-args_rules = read_rule('args')
-ua_rules = read_rule('user_agent')
-post_rules = read_rule('post')
-cookie_rules = read_rule('cookie')
+url_rules = readRule('url')
+white_url_rules = readRule('white_url')
+args_rules = readRule('args')
+ua_rules = readRule('user_agent')
+post_rules = readRule('post')
+cookie_rules = readRule('cookie')
 
 
 function debugSay(msg)
