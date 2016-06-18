@@ -1,8 +1,13 @@
 --------- Global default config -------
 require 'config'
 --------- Local config setting --------
-cc_deny = true
+debug = true
+
+cc_deny = false
 cc_rate = '10/60'
+ip_check = true
+ip_write_list = {}
+ip_black_list = {}
 
 --------- Init project ----------------
 require 'init'
