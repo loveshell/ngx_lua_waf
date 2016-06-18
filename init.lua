@@ -1,4 +1,3 @@
--- require 'config'
 local match = string.match
 local ngx_match = ngx.re.match
 local unescape = ngx.unescape_uri
@@ -199,13 +198,20 @@ function denyCC(cc_rate, cc_deny_seconds)
     local block, _ = limit:get(ip)
 
     if block then
-        ngx.exit(405)
+        if debug then
+            ngx.say('Deny by waf.')
+            return false
+        elseif cc_redirect then
+            ngx.redirect(cc_redirect_url)
+        else
+            ngx.exit(404)
+        end
     end
 
     if req then
         if req > cc_count then
             limit:set(ip, 1, cc_deny_seconds)
-            ngx.exit(405)
+            ngx.exit(404)
             return false
         else
              limit:incr(token, 1)

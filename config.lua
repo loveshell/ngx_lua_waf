@@ -10,7 +10,7 @@ post_check = false
 
 black_file_ext = {"php", "jsp"}
 attack_log = false
-attach_log_dir = "/usr/local/nginx/logs/hack/"
+attach_log_dir = "/data/logs/waf/"
 
 redirect = false
 redirect_url = "http://www.baidu.com"
