@@ -42,25 +42,25 @@ function log(method, url, data, tag)
 end
 
 ------------------------------------ 规则读取函数 -----------------------------------------
-function readRule(var)
-    file = io.open(rule_path..'/'..var, "r")
-    if file == nil then
-        return
-    end
-    t = {}
-    for line in file:lines() do
-        table.insert(t, line)
-    end
-    file:close()
-    return(t)
-end
+-- function readRule(var)
+--     file = io.open(rule_path..'/'..var, "r")
+--     if file == nil then
+--         return
+--     end
+--     t = {}
+--     for line in file:lines() do
+--         table.insert(t, line)
+--     end
+--     file:close()
+--     return(t)
+-- end
 
-url_rules = readRule('url')
-white_url_rules = readRule('white_url')
-args_rules = readRule('args')
-ua_rules = readRule('user_agent')
-post_rules = readRule('post')
-cookie_rules = readRule('cookie')
+-- url_rules = readRule('url')
+-- white_url_rules = readRule('white_url')
+-- args_rules = readRule('args')
+-- ua_rules = readRule('user_agent')
+-- post_rules = readRule('post')
+-- cookie_rules = readRule('cookie')
 
 
 function debugSay(msg)
@@ -73,67 +73,67 @@ function debugSay(msg)
 end
 
 
-function whiteURLCheck()
-    if white_url_rules ~= nil then
-        for _, rule in pairs(white_url_rules) do
-            if ngx_match(ngx.var.uri, rule, "isjo") then
-                return true
-             end
-        end
-    end
-    return false
-end
+-- function whiteURLCheck()
+--     if white_url_rules ~= nil then
+--         for _, rule in pairs(white_url_rules) do
+--             if ngx_match(ngx.var.uri, rule, "isjo") then
+--                 return true
+--              end
+--         end
+--     end
+--     return false
+-- end
 
 
-function fileExtCheck(ext, black_file_ext)
-    local items = Set(black_fileExt)
-    ext = string.lower(ext)
-    if ext then
-        for rule in pairs(items) do
-            if ngx.re.match(ext, rule, "isjo") then
-                if attack_log then
-                    log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
-                end
+-- function fileExtCheck(ext, black_file_ext)
+--     local items = Set(black_fileExt)
+--     ext = string.lower(ext)
+--     if ext then
+--         for rule in pairs(items) do
+--             if ngx.re.match(ext, rule, "isjo") then
+--                 if attack_log then
+--                     log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
+--                 end
 
-                if debug then
-                    debugSay(ngx.var.request_uri.."-".."file attack with ext: "..ext)
-                end
-            end
-        end
-    end
-    return false
-end
-
-
-function set(list)
-    local set = {}
-    for _, l in ipairs(list) do
-        set[l] = true
-    end
-    return set
-end
+--                 if debug then
+--                     debugSay(ngx.var.request_uri.."-".."file attack with ext: "..ext)
+--                 end
+--             end
+--         end
+--     end
+--     return false
+-- end
 
 
-function checkArgs()
-    for _, rule in pairs(args_rules) do
-        local args = ngx.req.get_uri_args()
-        for key, val in pairs(args) do
-            if type(val) == 'table' then
-                if val ~= false then
-                    data = table.concat(val, " ")
-                end
-            else
-                data = val
-            end
-            if data and type(data) ~= "boolean" and rule ~="" and ngx_match(unescape(data), rule, "isjo") then
-                log('GET', ngx.var.request_uri, "-", rule)
-                debugSay(ngx.var.request_uri.."-"..rule)
-                return true
-            end
-        end
-    end
-    return false
-end
+-- function set(list)
+--     local set = {}
+--     for _, l in ipairs(list) do
+--         set[l] = true
+--     end
+--     return set
+-- end
+
+
+-- function checkArgs()
+--     for _, rule in pairs(args_rules) do
+--         local args = ngx.req.get_uri_args()
+--         for key, val in pairs(args) do
+--             if type(val) == 'table' then
+--                 if val ~= false then
+--                     data = table.concat(val, " ")
+--                 end
+--             else
+--                 data = val
+--             end
+--             if data and type(data) ~= "boolean" and rule ~="" and ngx_match(unescape(data), rule, "isjo") then
+--                 log('GET', ngx.var.request_uri, "-", rule)
+--                 debugSay(ngx.var.request_uri.."-"..rule)
+--                 return true
+--             end
+--         end
+--     end
+--     return false
+-- end
 
 
 -- function url()
@@ -188,35 +188,33 @@ end
 --     return false
 -- end
 
--- function denycc()
---     if CCDeny then
---         local uri=ngx.var.uri
---         CCcount=tonumber(string.match(CCrate,'(.*)/'))
---         CCseconds=tonumber(string.match(CCrate,'/(.*)'))
---         local token = getClientIp()..uri
---         local limit = ngx.shared.limit
---         local req,_ = limit:get(token)
---         local ip = getClientIp()
---         local block,_ = limit:get(ip)
+function denyCC(cc_rate, cc_deny_seconds)
+    local uri = ngx.var.uri
+    cc_count = tonumber(string.match(cc_rate, '(.*)/'))
+    cc_seconds = tonumber(string.match(cc_rate, '/(.*)'))
+    local token = getClientIp()..uri
+    local limit = ngx.shared.limit
+    local req, _ = limit:get(token)
+    local ip = getClientIp()
+    local block, _ = limit:get(ip)
 
---         if block then
---             ngx.exit(503)
---         end
+    if block then
+        ngx.exit(405)
+    end
 
---         if req then
---             if req > CCcount then
---                 limit:set(ip,1,DenySeconds)
---                 ngx.exit(503)
---                 return true
---             else
---                  limit:incr(token,1)
---             end
---         else
---             limit:set(token,1,CCseconds)
---         end
---     end
---     return false
--- end
+    if req then
+        if req > cc_count then
+            limit:set(ip, 1, cc_deny_seconds)
+            ngx.exit(405)
+            return false
+        else
+             limit:incr(token, 1)
+        end
+    else
+        limit:set(token, 1, cc_seconds)
+    end
+    return true
+end
 
 -- function get_boundary()
 --     local header = get_headers()["content-type"]

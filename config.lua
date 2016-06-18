@@ -1,5 +1,5 @@
 debug = false
-rule_path = "/usr/local/nginx/conf/waf/wafconf/"
+rule_path = "/data/server/nginx/conf/waf/wafconf/"
 url_check = false
 url_write_check = false
 args_check = false
