@@ -3,6 +3,9 @@
 
 ### 使用方法:
 1. nginx安装lua模块，不再详述
+2. 下载模块
+    cd /data/server/nginx/conf 
+    git clone https://github.com/ibuler/ngx_lua_waf.git waf
 2. nginx.conf 添加参数
     lua_package_path        /data/server/nginx/conf/waf/?.lua;  # 模块位置
     lua_shared_dict         limit 10m;  # 设置lua使用内存, 根据访问量设置合适值
