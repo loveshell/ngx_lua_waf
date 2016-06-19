@@ -252,8 +252,28 @@ end
 -- end
 
 function innet(ip, network)
-    matched = string.match(network, ip)
-    if match then
+    local star = ''
+    for i in string.gmatch(network, '%*') do
+        star = star..i
+    end
+
+    local ip = string.split(ip, '%.')
+    local network = string.split(network, '%.')
+    if ip == nil or network == nil then
+        return false
+    end
+
+    local ip_prefix = {}
+    local network_prefix = {}
+    for i=1, 4-string.len(star) do
+        ip_prefix[i] = ip[i]
+        network_prefix[i] = network[i]
+    end
+
+    ip_prefix = table.concat(ip_prefix, '.')
+    network_prefix = table.concat(network_prefix, '.')
+
+    if ip_prefix == network_prefix then
         return true
     else
         return false
