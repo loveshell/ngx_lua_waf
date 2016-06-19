@@ -62,7 +62,7 @@ end
 -- cookie_rules = readRule('cookie')
 
 
-function debugSay(msg)
+function debugSay(msg, debug)
     if debug then
         ngx.header.content_type = "text/html"
         ngx.status = ngx.HTTP_FORBIDDEN
@@ -187,7 +187,7 @@ end
 --     return false
 -- end
 
-function denyCC()
+function denyCC(cc_rate, cc_deny_seconds)
     local uri = ngx.var.uri
     cc_count = tonumber(string.match(cc_rate, '(.*)/'))
     cc_seconds = tonumber(string.match(cc_rate, '/(.*)'))
@@ -281,7 +281,7 @@ function innet(ip, network)
     end
 end
 
-function whiteIP()
+function whiteIP(ip_white_list, debug)
     if next(ip_white_list) ~= nil then
         ip = getClientIp()
         for _, wip in pairs(ip_white_list) do
@@ -296,7 +296,7 @@ function whiteIP()
     return false
 end
 
-function blackIP()
+function blackIP(ip_black_list, debug)
      if next(ip_black_list) ~= nil then
         ip = getClientIp()
          for _, bip in pairs(ip_black_list) do
