@@ -187,7 +187,7 @@ end
 --     return false
 -- end
 
-function denyCC(cc_rate, cc_deny_seconds)
+function denyCC(cc_rate, cc_deny_seconds, debug)
     local uri = ngx.var.uri
     cc_count = tonumber(string.match(cc_rate, '(.*)/'))
     cc_seconds = tonumber(string.match(cc_rate, '/(.*)'))

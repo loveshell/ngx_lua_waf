@@ -12,7 +12,7 @@ ip_black_list = {}
 --------- Init project ----------------
 require 'init'
 --------- Access control limit --------
-if ip_check and (whiteIP(ip_white_list) or blackIP(ip_black_list)) then
-elseif cc_deny and denyCC(cc_rate, cc_deny_seconds) then
+if ip_check and (whiteIP(ip_white_list, debug) or blackIP(ip_black_list, debug)) then
+elseif cc_deny and denyCC(cc_rate, cc_deny_seconds, debug) then
 else return
 end
