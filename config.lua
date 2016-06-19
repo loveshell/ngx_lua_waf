@@ -15,8 +15,8 @@ attach_log_dir = "/data/logs/waf/"
 redirect = false
 redirect_url = "http://www.baidu.com"
 ip_check = false
-ip_white_list = {"127.0.0.1", "172.16.1"}
-ip_black_list = {"1.0.0.1", "172.16.1"}
+ip_white_list = {}  -- {'192.168.1.*', '127.0.0.1'}
+ip_black_list = {}  -- {'0.0.0.0', '106.2.34.29'}
 
 cc_deny = false
 cc_rate = "100/60"
