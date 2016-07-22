@@ -1,10 +1,10 @@
 require 'config'
 local match = string.match
-local ngxmatch=ngx.re.match
+local ngxmatch=ngx.re.find
 local unescape=ngx.unescape_uri
 local get_headers = ngx.req.get_headers
 local optionIsOn = function (options) return options == "on" and true or false end
-logpath = logdir 
+logpath = logdir
 rulepath = RulePath
 UrlDeny = optionIsOn(UrlDeny)
 PostCheck = optionIsOn(postMatch)
@@ -15,11 +15,11 @@ attacklog = optionIsOn(attacklog)
 CCDeny = optionIsOn(CCDeny)
 Redirect=optionIsOn(Redirect)
 function getClientIp()
-        IP  = ngx.var.remote_addr 
-        if IP == nil then
-                IP  = "unknown"
-        end
-        return IP
+    IP  = ngx.var.remote_addr
+    if IP == nil then
+        IP  = "unknown"
+    end
+    return IP
 end
 function write(logfile,msg)
     local fd = io.open(logfile,"ab")
@@ -79,7 +79,7 @@ function whiteurl()
         if wturlrules ~=nil then
             for _,rule in pairs(wturlrules) do
                 if ngxmatch(ngx.var.uri,rule,"isjo") then
-                    return true 
+                    return true
                  end
             end
         end
