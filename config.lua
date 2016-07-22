@@ -25,7 +25,7 @@ html=[[
 	</style>
 </head>
 <body style=" padding:0; margin:0; font:14px/1.5 Microsoft Yahei, 宋体,sans-serif; color:#555;">
-	<div style="margin: 0 auto; width:1000px; padding-top:70px; overflow:hidden;">
+	<div style="margin: 0 auto; width:600px; padding-top:70px; overflow:hidden;">
 		<div style="width:600px; float:left;">
 			<div style=" height:40px; line-height:40px; color:#fff; font-size:16px; overflow:hidden; background:#6bb3f6; padding-left:20px;">网站防火墙 </div>
 			<div style="border:1px dashed #cdcece; border-top:none; font-size:14px; background:#fff; color:#555; line-height:24px; height:220px; padding:20px 20px 0 20px; overflow-y:auto;background:#f3f7f9;">
