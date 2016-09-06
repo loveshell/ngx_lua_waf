@@ -223,8 +223,9 @@ end
 
 function whiteip()
     if next(ipWhitelist) ~= nil then
+        clientIp = getClientIp()
         for _,ip in pairs(ipWhitelist) do
-            if getClientIp()==ip then
+            if ip == clientIp or string.find(clientIp, ip) == 1 then
                 return true
             end
         end
@@ -234,8 +235,9 @@ end
 
 function blockip()
      if next(ipBlocklist) ~= nil then
+        clientIp = getClientIp()
          for _,ip in pairs(ipBlocklist) do
-             if getClientIp()==ip then
+            if ip == clientIp or string.find(clientIp, ip) == 1 then
                  ngx.exit(403)
                  return true
              end
