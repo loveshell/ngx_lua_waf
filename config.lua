@@ -1,23 +1,26 @@
-debug = false
--- rule_path = "/data/server/nginx/conf/waf/wafconf/"
--- url_check = false
--- url_write_check = false
--- args_check = false
--- ua_check = false
--- ua_write_check = false
--- cookie_check = false
--- post_check = false
+--
+-- Created by IntelliJ IDEA.
+-- User: guang
+-- Date: 16/9/23
+-- Time: 下午4:28
+-- To change this template use File | Settings | File Templates.
+--
 
--- black_file_ext = {"php", "jsp"}
--- attack_log = false
--- attach_log_dir = "/data/logs/waf/"
+local _M = {}
+_M.version = '0.1.0'
 
--- redirect = false
--- redirect_url = "http://www.baidu.com"
-ip_check = false
-ip_white_list = {}  -- {'192.168.1.*', '127.0.0.1'}
-ip_black_list = {}  -- {'0.0.0.0', '106.2.34.29'}
 
-cc_deny = false
-cc_rate = "100/60"
-cc_deny_seconds = "600"
+_M.defaults = {
+    debug = true,
+    active = false,
+    cc_deny = true,
+    cc_rate = "100/600",
+    cc_deny_seconds = 600,
+    cc_deny_code = 404,
+    log_path = "/tmp/nginx_waf.log",
+    ip_check= true,
+    ip_white_list = nil,
+    ip_black_list = nil,
+}
+
+return _M
