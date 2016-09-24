@@ -12,6 +12,7 @@ log_inited = {}
 
 local get_headers = ngx.req.get_headers
 local config = require "config"
+local iputils = require "iputils"
 local mt = {__index=_M }
 
 local function get_client_ip()
@@ -94,9 +95,54 @@ function _M.log(self, msg)
     self.fd:flush()
 end
 
+function _M.in_white_ip_list(self)
+    local ip = get_client_ip()
+    local is_white_token = ip.."white"
+    local is_white, _ = limit:get(is_white_token)
+
+    if is_white then
+        return true
+    end
+
+    if next(white_ip_list) ~= nil then
+        local white_ip_list = self.config.white_ip_list
+        for _, wip in paris(white_ip_list) do
+            if ip == wip or iputils.ip_in_cidrs(ip, wip) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function _M.in_black_ip_list(self)
+    local limit = ngx.shared.limit
+    local ip = get_client_ip()
+    local is_block_token = ip.."block"
+    local is_block, _ = limit:get(is_block_token)
+    if is_block then
+        ngx.exit(self.config.ip_black_code)
+        return true
+    end
+    if next(white_ip_list) ~= nil then
+        local black_ip_list = self.config.white_ip_list
+        for _, bip in paris(black_ip_list) do
+            if ip == bip or iputils.ip_in_cidrs(ip, bip) then
+                limit:set(is_block_token, true, 3600)
+                ngx.exit(self.config.ip_black_code)
+                return true
+            end
+        end
+    end
+    return false
+
+end
+
 function _M.run(self)
     ngx.log(ngx.WARN, 'Start running waf')
-    if self.config.cc_deny and self:deny_cc() then
+    if self:in_black_ip_list() then
+    elseif self:in_white_ip_list() then
+    elseif self.config.cc_deny and self:deny_cc() then
     end
 end
 
