@@ -1,9 +1,8 @@
 --
 -- Created by IntelliJ IDEA.
--- User: guang
+-- User: ibuler <ibuler@qq.com>
 -- Date: 16/9/22
 -- Time: 下午7:13
--- To change this template use File | Settings | File Templates.
 --
 
 
@@ -63,11 +62,21 @@ function _M.deny_cc(self)
 
     if req then
         if req > max_visit then
-            ngx.exit(self.config.cc_deny_code)
-            return true
+            if self.config.active then
+                ngx.exit(self.config.cc_deny_code)
+                return true
+            else
+                return false
+            end
         elseif req == max_visit then
-            self:log("[Block] " .. token)
+            if self.config.active then
+                self:log("[Deny_cc] Block " .. token)
+                ngx.exit(self.config.cc_deny_code)
+            else
+                self:log("[Deny_cc] FakeBlock " .. token)
+            end
             limit:incr(token, 1)
+            return true
         else
             limit:incr(token, 1)
         end
@@ -81,7 +90,6 @@ function _M.log(self, msg)
         log_inited[self.config.log_path]  = io.open(self.config.log_path, 'ab')
     end
     self.fd = log_inited[self.config.log_path]
-
     self.fd:write(msg .. '\n')
     self.fd:flush()
 end

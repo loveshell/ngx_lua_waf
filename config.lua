@@ -1,10 +1,10 @@
 --
 -- Created by IntelliJ IDEA.
--- User: guang
--- Date: 16/9/23
--- Time: 下午4:28
--- To change this template use File | Settings | File Templates.
+-- User: ibuler <ibuler@qq.com>
+-- Date: 16/9/22
+-- Time: 下午7:13
 --
+
 
 local _M = {}
 _M.version = '0.1.0'
