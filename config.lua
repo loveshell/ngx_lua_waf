@@ -18,9 +18,9 @@ _M.defaults = {
     cc_deny_seconds = 600,
     cc_deny_code = 404,
     log_path = "/tmp/nginx_waf.log",
-    ip_white_list = {},
-    ip_black_list = {},
-    ip_black_code = 403,
+    white_ip_list = {},
+    black_ip_list = {},
+    black_return_code = 403,
 }
 
 return _M

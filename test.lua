@@ -9,7 +9,6 @@
 local _M = {}
 _M.version = '0.1.1'
 
-local util = require "resty.waf.util"
 
 local mt = {__index=_M}
 
@@ -19,23 +18,20 @@ end
 
 local config = {'hello', 'world' }
 
-local _a = {}
 
-
-function _M:new()
-    return setmetatable({}, mt)
+function _M.new(self, name)
+    name = name or 0
+    return setmetatable({name=name}, mt)
 end
 
-function _M:name()
-    local name = {'guang', 'hong', 'wei' }
-    name_new = util.table_copy(name)
-    print(table.concat(name_new, ','))
+function _M.get_name(self)
+    print(self.name)
 end
 
-function _M.get_version()
-    local name = _M.name()
-    print(name)
-end
+--function _M.get_version()
+--    local name = _M.name()
+--    print(name)
+--end
 
-return _a
+return _M
 

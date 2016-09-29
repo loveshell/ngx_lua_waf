@@ -14,6 +14,7 @@ local get_headers = ngx.req.get_headers
 local config = require "config"
 local iputils = require "iputils"
 local mt = {__index=_M }
+local limit = ngx.shared.limit
 
 local function get_client_ip()
    local ip = get_headers()["X-Real-IP"]
@@ -42,6 +43,7 @@ end
 
 function _M.new(self, name)
     local t = {}
+    name = name or ""
     t["name"] = name
     t["config"] = _M.table_copy(config.defaults)
     return setmetatable(t, mt)
@@ -58,7 +60,6 @@ function _M.deny_cc(self)
     local ip = get_client_ip()
 
     local token = ip..":"..uri
-    local limit = ngx.shared.limit
     local req, _ = limit:get(token)
 
     if req then
@@ -71,11 +72,9 @@ function _M.deny_cc(self)
             end
         elseif req == max_visit then
             if self.config.active then
-                self:log("[Deny_cc] Block " .. token)
                 ngx.exit(self.config.cc_deny_code)
-            else
-                self:log("[Deny_cc] FakeBlock " .. token)
             end
+            self:log("[Deny_cc] Block "..token)
             limit:incr(token, 1)
             return true
         else
@@ -87,27 +86,34 @@ function _M.deny_cc(self)
 end
 
 function _M.log(self, msg)
+    ngx.log(ngx.WARN, self.config.log_path)
     if log_inited[self.config.log_path] == nil then
-        log_inited[self.config.log_path]  = io.open(self.config.log_path, 'ab')
+        log_inited[self.config.log_path]  = io.open(self.config.log_path, 'a')
     end
     self.fd = log_inited[self.config.log_path]
-    self.fd:write(msg .. '\n')
+    if self.config.active then
+        self.fd:write(ngx.localtime().." [ACTIVE] ".."["..self.name.."] "..msg..'\n')
+    else
+        self.fd:write(ngx.localtime().." [MONITOR] ".."["..self.name.."] "..msg..'\n')
+    end
     self.fd:flush()
 end
 
 function _M.in_white_ip_list(self)
     local ip = get_client_ip()
-    local is_white_token = ip.."white"
-    local is_white, _ = limit:get(is_white_token)
+    local white_ip_token = ip.."white"
+    local is_white, _ = limit:get(white_ip_token)
 
     if is_white then
         return true
     end
 
+    local white_ip_list = self.config.white_ip_list
     if next(white_ip_list) ~= nil then
-        local white_ip_list = self.config.white_ip_list
-        for _, wip in paris(white_ip_list) do
+        for _, wip in pairs(white_ip_list) do
             if ip == wip or iputils.ip_in_cidrs(ip, wip) then
+                limit:set(white_ip_token, true, 3600)
+                self:log("[White_ip] In white list passed: "..ip)
                 return true
             end
         end
@@ -116,20 +122,26 @@ function _M.in_white_ip_list(self)
 end
 
 function _M.in_black_ip_list(self)
-    local limit = ngx.shared.limit
     local ip = get_client_ip()
-    local is_block_token = ip.."block"
-    local is_block, _ = limit:get(is_block_token)
+    local block_ip_token = ip.."block"
+    local is_block, _ = limit:get(block_ip_token)
+
     if is_block then
-        ngx.exit(self.config.ip_black_code)
+        if self.config.active then
+            ngx.exit(self.config.black_return_code)
+        end
         return true
     end
-    if next(white_ip_list) ~= nil then
-        local black_ip_list = self.config.white_ip_list
-        for _, bip in paris(black_ip_list) do
+
+    local black_ip_list = self.config.black_ip_list
+    if next(black_ip_list) ~= nil then
+        for _, bip in pairs(black_ip_list) do
             if ip == bip or iputils.ip_in_cidrs(ip, bip) then
-                limit:set(is_block_token, true, 3600)
-                ngx.exit(self.config.ip_black_code)
+                limit:set(block_ip_token, true, 3600)
+                self:log("[Black_ip] In black list denied: "..ip)
+                if self.config.active then
+                    ngx.exit(self.config.black_return_code)
+                end
                 return true
             end
         end
@@ -139,7 +151,6 @@ function _M.in_black_ip_list(self)
 end
 
 function _M.run(self)
-    ngx.log(ngx.WARN, 'Start running waf')
     if self:in_black_ip_list() then
     elseif self:in_white_ip_list() then
     elseif self.config.cc_deny and self:deny_cc() then

@@ -7,25 +7,24 @@
 --
 
 
-local lua_waf = require "core"
-local iputils = require "iputils"
-
+--local lua_waf = require "core"
+local lua_waf = require "test"
 local waf = lua_waf:new("test")
-local waf2 = lua_waf:new("jj")
 
-for k, v in pairs(waf["config"]) do
-    print(k, v)
-end
-
-waf:set_option("active", true)
-
-for k, v in pairs(waf["config"]) do
-    print(k, v)
-end
-print(waf.config.active)
-
+print(waf.name)
+--for k, v in pairs(waf["config"]) do
+--    print(k, v)
+--end
+--
+--waf:set_option("active", true)
+--
+--for k, v in pairs(waf["config"]) do
+--    pritt(k, v)
+--end
+--print(waf.config.active)
+--
 -- waf:deny_cc()
 -- waf2:deny_cc()
-waf:log("hello world")
-waf2:log("world")
-print(iputils.ip2bin("192.168.1.1"))
+--waf:log("hello world")
+--waf2:log("world")
+--waf:get_name()
