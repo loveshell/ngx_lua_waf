@@ -15,6 +15,7 @@ local config = require "config"
 local iputils = require "iputils"
 local mt = {__index=_M }
 local limit = ngx.shared.limit
+local _cidr_cache = {}
 
 local function get_client_ip()
    local ip = get_headers()["X-Real-IP"]
@@ -71,11 +72,11 @@ function _M.deny_cc(self)
                 return false
             end
         elseif req == max_visit then
+            self:log("[Deny_cc] Block "..token)
+            limit:incr(token, 1)
             if self.config.active then
                 ngx.exit(self.config.cc_deny_code)
             end
-            self:log("[Deny_cc] Block "..token)
-            limit:incr(token, 1)
             return true
         else
             limit:incr(token, 1)
@@ -83,6 +84,32 @@ function _M.deny_cc(self)
     else
         limit:set(token, 1, count_period)
     end
+end
+
+function cidr_match(ip, cidr_pattern)
+	local t = {}
+	local n = 1
+
+	if (type(cidr_pattern) ~= "table") then
+		cidr_pattern = { cidr_pattern }
+	end
+
+	for _, v in ipairs(cidr_pattern) do
+		-- try to grab the parsed cidr from out module cache
+		local cidr = _cidr_cache[v]
+
+		-- if it wasn't there, compute and cache the value
+		if (not cidr) then
+			local lower, upper = iputils.parse_cidr(v)
+			cidr = { lower, upper }
+			_cidr_cache[v] = cidr
+		end
+
+		t[n] = cidr
+		n = n + 1
+	end
+
+	return iputils.ip_in_cidrs(ip, t), ip
 end
 
 function _M.log(self, msg)
@@ -110,12 +137,10 @@ function _M.in_white_ip_list(self)
 
     local white_ip_list = self.config.white_ip_list
     if next(white_ip_list) ~= nil then
-        for _, wip in pairs(white_ip_list) do
-            if ip == wip or iputils.ip_in_cidrs(ip, wip) then
+        if cidr_match(ip, white_ip_list) then
                 limit:set(white_ip_token, true, 3600)
                 self:log("[White_ip] In white list passed: "..ip)
                 return true
-            end
         end
     end
     return false
@@ -135,15 +160,13 @@ function _M.in_black_ip_list(self)
 
     local black_ip_list = self.config.black_ip_list
     if next(black_ip_list) ~= nil then
-        for _, bip in pairs(black_ip_list) do
-            if ip == bip or iputils.ip_in_cidrs(ip, bip) then
+        if cidr_match(ip, black_ip_list) then
                 limit:set(block_ip_token, true, 3600)
                 self:log("[Black_ip] In black list denied: "..ip)
                 if self.config.active then
                     ngx.exit(self.config.black_return_code)
                 end
                 return true
-            end
         end
     end
     return false

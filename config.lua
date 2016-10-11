@@ -11,7 +11,6 @@ _M.version = '0.1.0'
 
 
 _M.defaults = {
-    debug = true,
     active = false,
     cc_deny = true,
     cc_rate = "100/600",
