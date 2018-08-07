@@ -7,7 +7,6 @@ logdir = "/var/log/nginx/"
 logtoserver = "on"
 --通过syslog日志方式提交hack_ip记录到日志服务器
 loghack="off"
---rosip='192.168.0.1'
 ------------
 UrlDeny="on"
 Redirect="on"
