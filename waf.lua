@@ -1,8 +1,12 @@
 local content_length=tonumber(ngx.req.get_headers()['content-length'])
 local method=ngx.req.get_method()
+--ngx_lua如果是0.9.2以上版本，建议正则过滤函数改为ngx.re.find，匹配效率会提高三倍左右。
 local ngxmatch=ngx.re.match
+--local ngxmatch=ngx.re.find
 if whiteip() then
 elseif blockip() then
+--检测攻击ip是否被拦截。
+elseif denyhackip(1) then
 elseif denycc() then
 elseif ngx.var.http_Acunetix_Aspect then
     ngx.exit(444)
@@ -42,7 +46,7 @@ elseif PostCheck then
 	   	        return true
     	    	end
 		size = size + len(data)
-		local m = ngxmatch(data,[[Content-Disposition: form-data;(.+)filename="(.+)\\.(.*)"]],'ijo')
+		local m = ngxmatch(data,[[Content-Disposition: form-data;(.+)filename="(.+)\.(.*)"]],'ijo')
         	if m then
             		fileExtCheck(m[3])
             		filetranslate = true
@@ -82,7 +86,8 @@ elseif PostCheck then
 				end
 			end
 		end
-    end
+		end
+
 else
     return
 end
