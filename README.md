@@ -15,6 +15,7 @@ site:^www.baidu.com/whiteurl/
 
 ------------------分割线-------------------------------------------------
 ---------------lovshell记录----------------------------------------------
+
 ##ngx_lua_waf
 
 ngx_lua_waf是我刚入职趣游时候开发的一个基于ngx_lua的web应用防火墙。
@@ -153,3 +154,51 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 </table>
 	
 感谢ngx_lua模块的开发者[@agentzh](https://github.com/agentzh/),春哥是我所接触过开源精神最好的人
+
+
+syntax: captures, err = ngx.re.match(subject, regex, options?, ctx?, res_table?)
+syntax: from, to, err = ngx.re.find(subject, regex, options?, ctx?, nth?)
+
+Specify options to control how the match operation will be performed. The following option characters are supported:
+
+a             anchored mode (only match from the beginning)
+
+d             enable the DFA mode (or the longest token match semantics).
+              this requires PCRE 6.0+ or else a Lua exception will be thrown.
+              first introduced in ngx_lua v0.3.1rc30.
+
+D             enable duplicate named pattern support. This allows named
+              subpattern names to be repeated, returning the captures in
+              an array-like Lua table. for example,
+                local m = ngx.re.match("hello, world",
+                                       "(?<named>\w+), (?<named>\w+)",
+                                       "D")
+                -- m["named"] == {"hello", "world"}
+              this option was first introduced in the v0.7.14 release.
+              this option requires at least PCRE 8.12.
+
+i             case insensitive mode (similar to Perl's /i modifier)
+
+j             enable PCRE JIT compilation, this requires PCRE 8.21+ which
+              must be built with the --enable-jit option. for optimum performance,
+              this option should always be used together with the 'o' option.
+              first introduced in ngx_lua v0.3.1rc30.
+
+J             enable the PCRE Javascript compatible mode. this option was
+              first introduced in the v0.7.14 release. this option requires
+              at least PCRE 8.12.
+
+m             multi-line mode (similar to Perl's /m modifier)
+
+o             compile-once mode (similar to Perl's /o modifier),
+              to enable the worker-process-level compiled-regex cache
+
+s             single-line mode (similar to Perl's /s modifier)
+
+u             UTF-8 mode. this requires PCRE to be built with
+              the --enable-utf8 option or else a Lua exception will be thrown.
+
+U             similar to "u" but disables PCRE's UTF-8 validity check on
+              the subject string. first introduced in ngx_lua v0.8.1.
+
+x             extended mode (similar to Perl's /x modifier)
