@@ -1,23 +1,35 @@
-RulePath = "/usr/local/nginx/conf/waf/wafconf/"
+RulePath = "/etc/nginx/waf/wafconf/"
 attacklog = "on"
-logdir = "/usr/local/nginx/logs/hack/"
+--保存日志到文件
+logtofile = "off"
+logdir = "/var/log/nginx/"
+--保存日志到syslog,采用nginx设置
+logtoserver = "on"
+--通过syslog日志方式提交hack_ip记录到日志服务器
+loghack="off"
+------------
 UrlDeny="on"
 Redirect="on"
 CookieMatch="on"
 postMatch="on" 
 whiteModule="on" 
 black_fileExt={"php","jsp"}
-ipWhitelist={"127.0.0.1"}
+ipWhitelist={"127.0.0.1","192.168.2.1"}
 ipBlocklist={"1.0.0.1"}
-CCDeny="off"
-CCrate="100/60"
+--违规ip登记，是否限制访问。
+--hackrate超过10次/5秒,限制访问1800秒。
+hackipdeny="on"
+hackrate="10/60/1800"
+--cc攻击防范
+CCDeny="on"
+CCrate="30/60/30"
 html=[[
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>网站防火墙</title>
 <style>
 p {
-	line-height:20px;
+    line-height:20px;
 }
 ul{ list-style-type:none;}
 li{ list-style-type:none;}
