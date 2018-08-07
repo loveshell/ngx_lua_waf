@@ -5,9 +5,9 @@ logtofile = "off"
 logdir = "/var/log/nginx/"
 --保存日志到syslog,采用nginx设置
 logtoserver = "on"
---通过log日志方式提交hack_ip记录到ros(失败：ros没办法将udp提交的信息加载到地址表)
+--通过syslog日志方式提交hack_ip记录到日志服务器
 loghack="off"
---rosip='192.168.199.1'
+--rosip='192.168.0.1'
 ------------
 UrlDeny="on"
 Redirect="on"
