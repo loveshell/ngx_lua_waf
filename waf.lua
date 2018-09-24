@@ -1,6 +1,6 @@
 local content_length=tonumber(ngx.req.get_headers()['content-length'])
 local method=ngx.req.get_method()
-local ngxmatch=ngx.re.match
+local ngxmatch=ngx.re.find
 if whiteip() then
 elseif blockip() then
 elseif denycc() then
@@ -14,7 +14,7 @@ elseif url() then
 elseif args() then
 elseif cookie() then
 elseif PostCheck then
-    if method=="POST" then   
+    if method=="POST" then
             local boundary = get_boundary()
 	    if boundary then
 	    local len = string.len
