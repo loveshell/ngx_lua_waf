@@ -13,10 +13,10 @@ if [ ! -x "v0.2.17rc2.zip" ]; then
 wget https://github.com/simpl/ngx_devel_kit/archive/v0.2.17rc2.zip
 fi
 unzip v0.2.17rc2
-if [ ! -x "v0.7.4.zip" ]; then  
-wget https://github.com/chaoslawful/lua-nginx-module/archive/v0.7.4.zip
+if [ ! -x "v0.10.10.zip" ]; then  
+wget https://github.com/chaoslawful/lua-nginx-module/archive/v0.10.10.zip
 fi
-unzip v0.7.4
+unzip v0.10.10
 cd /data/src
 if [ ! -x "pcre-8.10.tar.gz" ]; then
 wget http://blog.s135.com/soft/linux/nginx_php/pcre/pcre-8.10.tar.gz
@@ -33,7 +33,7 @@ tar -xzvf nginx-1.2.4.tar.gz
 cd nginx-1.2.4/
 export LUAJIT_LIB=/usr/local/lj2/lib/
 export LUAJIT_INC=/usr/local/lj2/include/luajit-2.0/
-./configure --user=daemon --group=daemon --prefix=/usr/local/nginx/ --with-http_stub_status_module --with-http_sub_module --with-http_gzip_static_module --without-mail_pop3_module --without-mail_imap_module --without-mail_smtp_module  --add-module=../ngx_devel_kit-0.2.17rc2/ --add-module=../lua-nginx-module-0.7.4/
+./configure --user=daemon --group=daemon --prefix=/usr/local/nginx/ --with-http_stub_status_module --with-http_sub_module --with-http_gzip_static_module --without-mail_pop3_module --without-mail_imap_module --without-mail_smtp_module  --add-module=../ngx_devel_kit-0.2.17rc2/ --add-module=../lua-nginx-module-0.10.10/
 make -j8
 make install 
 #rm -rf /data/src
