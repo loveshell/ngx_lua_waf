@@ -1,3 +1,5 @@
+yum -y install gcc gcc-c++ autoconf automake make
+yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel
 mkdir -p /data/src
 cd /data/src
 if [ ! -x "LuaJIT-2.0.0.tar.gz" ]; then  
